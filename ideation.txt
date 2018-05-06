@@ -1,0 +1,11 @@
+model real life probabilistically using functions
+Example: a function of the person's health and happiness and age that lead to chance of person falling sick on a particular day
+UI: see overview of their statistics, also able to choose actions to perform (which affects stats)
+World Editor (for functions) / Play mode 
+World Editor: input variables(stats), functions(control stats), text results, text choice --> text results
+Every day, person choose what to do 
+Probabilistically come up with events that happen throughout the day.
+NUS FASS SIMULATOR ??
+Game runs on the functions. (event function / action function ??)
+because like if i say is 1% chance to be sick at X age, Y health and Z stress level
+
