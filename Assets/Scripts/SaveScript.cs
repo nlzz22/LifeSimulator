@@ -4,17 +4,15 @@ using UnityEngine;
 [System.Serializable]
 public class Save
 {
-    private float positionx;
-    private float positiony;
+    private AttributeScript[] attributes;
 
-    public void SavePosition(float x, float y)
+    public void SaveAttributes(AttributeScript[] in_attributes)
     {
-        positionx = x;
-        positiony = y;
+        attributes = in_attributes;
     }
 
-    public Vector3 GetPosition()
+    public AttributeScript[] GetAttributes()
     {
-        return new Vector3(positionx, positiony, 0);
+        return attributes;
     }
 }

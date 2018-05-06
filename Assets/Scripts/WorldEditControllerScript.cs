@@ -3,20 +3,57 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class GameScript : MonoBehaviour {
+public class WorldEditControllerScript : GameControllerScript
+{
     [SerializeField]
-    private GameObject ball;
+    private GameObject attrFieldPrefab;
 
-    private static string saveFileName = "/worldeditor.data";
+    private void Start()
+    {
+        // load the saved values.
+        LoadGame();
+    }
 
+    // Create the Save object, and put data to store into it.
     private Save CreateSaveGameObject()
     {
         Save save = new Save();
-        Vector3 pos = ball.transform.localPosition;
-        save.SavePosition(pos.x, pos.y);
+        List<AttributeScript> attributes = new List<AttributeScript>();
+
+        int numberOfChildren = attributesGrid.transform.childCount;
+        for (int i = 0; i < numberOfChildren; i++)
+        {
+            GameObject currChild = attributesGrid.transform.GetChild(i).gameObject;
+            string currentAttrName = currChild.GetComponent<InputField>().text;
+            int currentAttrValue = (int)currChild.GetComponentInChildren<Slider>().value;
+
+            // if attribute is not empty.
+            if (currentAttrName.Trim() != "")
+            {
+                attributes.Add(new AttributeScript(currentAttrName, currentAttrValue));
+            }
+        }
+
+        save.SaveAttributes(attributes.ToArray());
 
         return save;
+    }
+
+    private void BuildTheAttributeGrid(AttributeScript[] attributes)
+    {
+        foreach (AttributeScript attribute in attributes)
+        {
+            // create the attribute field 
+            GameObject field = Instantiate(attrFieldPrefab);
+            field.transform.SetParent(attributesGrid.transform);
+            // set the text field.
+            field.GetComponent<InputField>().text = attribute.GetAttributeName();
+            // set the value for slider.
+            field.GetComponentInChildren<Slider>().value = attribute.GetDefaultValue();
+        }
+        
     }
 
     public void SaveGame()
@@ -31,11 +68,11 @@ public class GameScript : MonoBehaviour {
         FileStream file = File.Create(Application.persistentDataPath + saveFileName);
         bf.Serialize(file, save);
         file.Close();
-        
+
         Debug.Log("Game Saved");
     }
 
-    public void LoadGame()
+    public override void LoadGame()
     {
         // Checks to see that the save file exists.
         if (File.Exists(Application.persistentDataPath + saveFileName))
@@ -49,7 +86,7 @@ public class GameScript : MonoBehaviour {
             file.Close();
 
             // Load save information into the game state.
-            ball.transform.localPosition = save.GetPosition();
+            BuildTheAttributeGrid(save.GetAttributes());
 
             Debug.Log("Game Loaded");
         }
@@ -57,5 +94,6 @@ public class GameScript : MonoBehaviour {
         {
             Debug.Log("No game saved!");
         }
+
     }
 }
