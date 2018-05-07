@@ -5,17 +5,39 @@ using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
 public class ButtonScript : MonoBehaviour {
+    // Attributes
+    [SerializeField]
+    private GameObject attributeButton;
+    [SerializeField]
+    private GameObject attributeCanvas;
     [SerializeField]
     private GameObject attributeGrid;
     [SerializeField]
     private GameObject attributeField;
 
+    // Event functions
+    [SerializeField]
+    private GameObject eventFunctionButton;
+    [SerializeField]
+    private GameObject eventFunctionCanvas;
+    [SerializeField]
+    private GameObject eventFunctionGrid;
+    [SerializeField]
+    private GameObject eventFunctionField;
+
     private WorldEditControllerScript gameScript;
 
-    private void FindGameScript()
+    private WorldEditControllerScript FindGameScript()
     {
-        GameObject gameController = GameObject.FindGameObjectWithTag("GameController");
-        gameScript = gameController.GetComponent<WorldEditControllerScript>();
+        if (gameScript == null)
+        {
+            GameObject gameController = GameObject.FindGameObjectWithTag("GameController");
+            gameScript = gameController.GetComponent<WorldEditControllerScript>();
+            return gameScript;
+        } else
+        {
+            return gameScript;
+        }
     }
 
     public void PlayGame()
@@ -28,6 +50,29 @@ public class ButtonScript : MonoBehaviour {
         SceneManager.LoadScene("WorldEditor");
     }
 
+    public void EventFunctionTab()
+    {
+        // save the attributes for another canvas to use.
+        FindGameScript().CacheAttributes();
+        // change canvas
+        attributeCanvas.SetActive(false);
+        eventFunctionCanvas.SetActive(true);
+        // change buttons
+        attributeButton.SetActive(true);
+        eventFunctionButton.SetActive(false);
+    }
+
+    public void AttributeTab()
+    {
+        // change canvas
+        attributeCanvas.SetActive(true);
+        eventFunctionCanvas.SetActive(false);
+        // change buttons
+        attributeButton.SetActive(false);
+        eventFunctionButton.SetActive(true);
+    }
+    
+
     public void MainMenu()
     {
         SceneManager.LoadScene("MainMenu");
@@ -37,18 +82,23 @@ public class ButtonScript : MonoBehaviour {
     {
         if (attributeGrid != null)
         {
-            GameObject field = Instantiate(attributeField);
-            field.transform.SetParent(attributeGrid.transform);
+            GameObject field = Instantiate(attributeField, attributeGrid.transform);
+            //field.transform.SetParent(attributeGrid.transform);
+        }
+    }
+
+    public void AddEventFunction()
+    {
+        if (eventFunctionGrid != null)
+        {
+            GameObject field = Instantiate(eventFunctionField, eventFunctionGrid.transform);
+            //field.transform.SetParent(eventFunctionGrid.transform);
         }
     }
 
     public void SaveAndExit()
     {
-        if (gameScript == null)
-        {
-            FindGameScript();
-        }
-        gameScript.SaveGame();
+        FindGameScript().SaveGame();
         MainMenu();
     }
 

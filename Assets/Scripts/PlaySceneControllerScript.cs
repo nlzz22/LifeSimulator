@@ -39,8 +39,8 @@ public class PlaySceneControllerScript : GameControllerScript
         foreach (AttributeScript attribute in attributes)
         {
             // create the attribute field 
-            GameObject field = Instantiate(attrFieldPrefab);
-            field.transform.SetParent(attributesGrid.transform);
+            GameObject field = Instantiate(attrFieldPrefab, attributesGrid.transform);
+            // field.transform.SetParent(attributesGrid.transform);
             // set the text field.
             GameObject attributeName = field.transform.Find(ATTRIBUTE_NAME).gameObject;
             string attributeNameText = attribute.GetAttributeName();

@@ -10,6 +10,8 @@ public class WorldEditControllerScript : GameControllerScript
     [SerializeField]
     private GameObject attrFieldPrefab;
 
+    private List<string> tempAttributes;
+
     private void Start()
     {
         // load the saved values.
@@ -39,6 +41,29 @@ public class WorldEditControllerScript : GameControllerScript
         save.SaveAttributes(attributes.ToArray());
 
         return save;
+    }
+
+    public void CacheAttributes()
+    {
+        tempAttributes = new List<string>();
+
+        int numberOfChildren = attributesGrid.transform.childCount;
+        for (int i = 0; i < numberOfChildren; i++)
+        {
+            GameObject currChild = attributesGrid.transform.GetChild(i).gameObject;
+            string currentAttrName = currChild.GetComponent<InputField>().text;
+
+            // if attribute is not empty.
+            if (currentAttrName.Trim() != "")
+            {
+                tempAttributes.Add(currentAttrName);
+            }
+        }
+    }
+
+    public List<string> GetCachedAttributes()
+    {
+        return tempAttributes;
     }
 
     private void BuildTheAttributeGrid(AttributeScript[] attributes)
