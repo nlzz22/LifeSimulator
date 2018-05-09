@@ -25,6 +25,10 @@ public class ButtonScript : MonoBehaviour {
     [SerializeField]
     private GameObject eventFunctionField;
 
+    // Extras
+    [SerializeField]
+    private GameObject conditionDropdown;
+
     private WorldEditControllerScript gameScript;
 
     private WorldEditControllerScript FindGameScript()
@@ -82,8 +86,7 @@ public class ButtonScript : MonoBehaviour {
     {
         if (attributeGrid != null)
         {
-            GameObject field = Instantiate(attributeField, attributeGrid.transform);
-            //field.transform.SetParent(attributeGrid.transform);
+            Instantiate(attributeField, attributeGrid.transform);
         }
     }
 
@@ -91,9 +94,16 @@ public class ButtonScript : MonoBehaviour {
     {
         if (eventFunctionGrid != null)
         {
-            GameObject field = Instantiate(eventFunctionField, eventFunctionGrid.transform);
-            //field.transform.SetParent(eventFunctionGrid.transform);
+            Instantiate(eventFunctionField, eventFunctionGrid.transform);
         }
+    }
+
+    public void AddConditionDropdown()
+    {
+        GameObject addButton = EventSystem.current.currentSelectedGameObject;
+        Transform conditionGrid = addButton.transform.parent.Find("ConditionGrid");
+        
+        Instantiate(conditionDropdown, conditionGrid);
     }
 
     public void SaveAndExit()

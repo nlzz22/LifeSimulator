@@ -460,6 +460,12 @@ Prefab:
       value: 
       objectReference: {fileID: 1513355866502070, guid: b8785145e4a27f943b2e9a3c7d043f79,
         type: 2}
+    - target: {fileID: 114758092847423940, guid: a6f9cdfbfe4f2014d9568f82d82e1d08,
+        type: 2}
+      propertyPath: conditionDropdown
+      value: 
+      objectReference: {fileID: 1905319958370262, guid: 31a6fe3b024837e439e8db304c8fad6a,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a6f9cdfbfe4f2014d9568f82d82e1d08, type: 2}
   m_IsPrefabParent: 0

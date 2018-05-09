@@ -38,8 +38,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cfa0765a6247f674caae0a5e4b80643c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attributeButton: {fileID: 0}
+  attributeCanvas: {fileID: 0}
   attributeGrid: {fileID: 0}
   attributeField: {fileID: 0}
+  eventFunctionButton: {fileID: 0}
+  eventFunctionCanvas: {fileID: 0}
+  eventFunctionGrid: {fileID: 0}
+  eventFunctionField: {fileID: 0}
+  conditionDropdown: {fileID: 1905319958370262, guid: 31a6fe3b024837e439e8db304c8fad6a,
+    type: 2}
 --- !u!224 &224230871056746012
 RectTransform:
   m_ObjectHideFlags: 1
