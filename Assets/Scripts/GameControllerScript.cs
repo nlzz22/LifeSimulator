@@ -8,6 +8,8 @@ using UnityEngine.UI;
 public abstract class GameControllerScript : MonoBehaviour {
     [SerializeField]
     protected GameObject attributesGrid;
+    [SerializeField]
+    protected GameObject eventFunctionsGrid;
 
     protected static string saveFileName = "/worldeditor.data";
 

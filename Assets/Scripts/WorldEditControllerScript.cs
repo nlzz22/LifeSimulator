@@ -40,6 +40,18 @@ public class WorldEditControllerScript : GameControllerScript
 
         save.SaveAttributes(attributes.ToArray());
 
+        List<EventFunctionScript> eventFuncs = new List<EventFunctionScript>();
+        int numChild = eventFunctionsGrid.transform.childCount;
+        for (int i = 0; i < numChild; i++)
+        {
+
+            GameObject eventFuncWhole = eventFunctionsGrid.transform.GetChild(i).gameObject;
+            EventFunctionScript currEventFunction = new EventFunctionScript(eventFuncWhole);
+            eventFuncs.Add(currEventFunction);
+        }
+
+        save.SaveEventFunctions(eventFuncs.ToArray());
+
         return save;
     }
 

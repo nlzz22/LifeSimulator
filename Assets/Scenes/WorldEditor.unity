@@ -1170,6 +1170,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attributesGrid: {fileID: 702103892}
+  eventFunctionsGrid: {fileID: 1480610586}
   attrFieldPrefab: {fileID: 1513355866502070, guid: d05972195fa4ad341b8bcd5cf8aa6d5d,
     type: 2}
 --- !u!1 &1246785939
