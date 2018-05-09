@@ -5,6 +5,8 @@ using UnityEngine;
 public class EditEventFunction : MonoBehaviour {
     private GameObject currentEventFunctionWhole;
     private GameObject functionsGrid;
+    private GameObject mainCanvas;
+    private GameObject addEventFuncButton;
 
     private GameObject FindCurrentEventFunctionWhole()
     {
@@ -16,6 +18,16 @@ public class EditEventFunction : MonoBehaviour {
         return currentEventFunctionWhole;
     }
 
+    private GameObject FindAddEventFuncBtn()
+    {
+        if (addEventFuncButton == null)
+        {
+            addEventFuncButton = GameObject.Find("Event Function Canvas").transform.Find("AddButton").gameObject;
+        }
+
+        return addEventFuncButton;
+    }
+
     private GameObject FindFunctionsGrid()
     {
         if (functionsGrid == null)
@@ -25,6 +37,16 @@ public class EditEventFunction : MonoBehaviour {
         }
 
         return functionsGrid;
+    }
+
+    private GameObject FindMainCanvas()
+    {
+        if (mainCanvas == null)
+        {
+            mainCanvas = GameObject.Find("ButtonActions").GetComponent<ButtonScript>().GetMainCanvas();
+        }
+
+        return mainCanvas;
     }
 
 	public void Edit()
@@ -44,5 +66,10 @@ public class EditEventFunction : MonoBehaviour {
         transform.parent.gameObject.SetActive(false); // hide rep.
         currentEventFunctionWhole.transform.Find("EventFunctionInput").gameObject.SetActive(true); // show input.
 
+        // hide main canvas
+        FindMainCanvas().SetActive(false);
+
+        // hide the "add" button
+        FindAddEventFuncBtn().SetActive(false);
     }
 }

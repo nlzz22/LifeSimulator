@@ -40,6 +40,16 @@ public class ButtonScript : MonoBehaviour {
         FindMainCanvas();
     }
 
+    private GameObject FindAddEventFuncBtn()
+    {
+        if (addEventFuncButton == null)
+        {
+            addEventFuncButton = GameObject.Find("Event Function Canvas").transform.Find("AddButton").gameObject;
+        }
+
+        return addEventFuncButton;
+    }
+
     private GameObject FindMainCanvas()
     {
         if (mainCanvas == null)
@@ -57,7 +67,7 @@ public class ButtonScript : MonoBehaviour {
 
     public GameObject GetMainCanvas()
     {
-        return mainCanvas;
+        return FindMainCanvas();
     }
 
     private WorldEditControllerScript FindGameScript()
@@ -202,7 +212,7 @@ public class ButtonScript : MonoBehaviour {
             // Update overview button with event name.
             eventFunctionButton.GetComponentInChildren<Text>().text = eventName;
             // Unhide the "add" event function button.
-            addEventFuncButton.SetActive(true);
+            FindAddEventFuncBtn().SetActive(true);
             // Unhide the main canvas
             FindMainCanvas().SetActive(true);
             // Unhides all child of grid.

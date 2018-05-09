@@ -9,6 +9,14 @@ public class WorldEditControllerScript : GameControllerScript
 {
     [SerializeField]
     private GameObject attrFieldPrefab;
+    [SerializeField]
+    private GameObject eventFunctionWhole;
+    [SerializeField]
+    private GameObject attrInputCond;
+    [SerializeField]
+    private GameObject percentInputCond;
+    [SerializeField]
+    private GameObject condDropdown;
 
     private List<string> tempAttributes;
 
@@ -96,21 +104,57 @@ public class WorldEditControllerScript : GameControllerScript
     private void BuildTheEventFunctionGrid(EventFunctionScript[] eventfuncs)
     {
         for (int i = 0; i < eventfuncs.Length; i++)
-        {
+        { // TODO
+            GameObject eventfuncwhole = Instantiate(eventFunctionWhole, eventFunctionsGrid.transform);
             EventFunctionScript currEventFunc = eventfuncs[i];
             string eventName = currEventFunc.GetEventName();
-            Debug.Log("event name is : " + eventName);
+
+            // populate event names.
+            Transform eventFuncRep = eventfuncwhole.transform.Find("EventFunctionRep");
+            eventFuncRep.Find("EventFunctionButton").
+                GetComponentInChildren<Text>().text = eventName;
+            Transform eventFuncInput = eventfuncwhole.transform.Find("EventFunctionInput");
+            eventFuncInput.GetComponent<InputField>().text = eventName;
+
+            // populate conditional statements.
+            Transform conditionGrid = eventFuncInput.Find("ConditionGrid");
+            Destroy(conditionGrid.GetChild(0).gameObject); // remove all child (it has only 1 child by default)
             EventFunctionScript.ConditionScript[] conds = currEventFunc.GetAllConditions();
             for (int j = 0; j < conds.Length; j++)
             {
+                // retrieve all saved values for population.
                 EventFunctionScript.ConditionScript cond = conds[j];
                 int dropdownVal = cond.dropdownValue;
                 int secDropVal = cond.secondDropdownValue;
                 string text = cond.textField;
                 string endField = cond.endField;
-                Debug.Log("drop : " + dropdownVal + " second drop : " + secDropVal + " text : " + text + " end : " + endField);
+
+                // start populating to real world.
+                GameObject conditionalDropdown = Instantiate(condDropdown, conditionGrid);
+                conditionalDropdown.GetComponent<Dropdown>().value = dropdownVal;
+                Transform condAttachment = conditionalDropdown.transform.Find("ConditionalAttachment");
+
+                if (dropdownVal == 1) // percentage
+                {
+                    condAttachment.GetComponentInChildren<InputField>().text = text;
+                } else if (dropdownVal == 2) // attribute
+                {
+                    Transform attrInputCond = condAttachment.GetChild(0);
+                    Transform dropdown = attrInputCond.Find("Dropdown");
+                    Transform start = attrInputCond.Find("RangeStartField");
+                    Transform end = attrInputCond.Find("RangeEndField");
+                    dropdown.GetComponent<Dropdown>().value = secDropVal;
+                    start.GetComponent<InputField>().text = text;
+                    end.GetComponent<InputField>().text = endField;
+                }
             }
-            
+
+            // populate action statements. Todo
+
+
+            // Hide and unhide the necessary so that rep view is shown.
+            eventFuncRep.gameObject.SetActive(true);
+            eventFuncInput.gameObject.SetActive(false);
         }
     }
 
