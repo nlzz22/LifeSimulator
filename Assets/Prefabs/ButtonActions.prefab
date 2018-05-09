@@ -48,6 +48,8 @@ MonoBehaviour:
   eventFunctionField: {fileID: 0}
   conditionDropdown: {fileID: 1905319958370262, guid: 31a6fe3b024837e439e8db304c8fad6a,
     type: 2}
+  actionDropdown: {fileID: 1167795167481536, guid: de79221b96981e34480b568065e9dfff,
+    type: 2}
 --- !u!224 &224230871056746012
 RectTransform:
   m_ObjectHideFlags: 1

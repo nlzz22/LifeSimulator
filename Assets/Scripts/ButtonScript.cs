@@ -28,6 +28,8 @@ public class ButtonScript : MonoBehaviour {
     // Extras
     [SerializeField]
     private GameObject conditionDropdown;
+    [SerializeField]
+    private GameObject actionDropdown;
 
     private WorldEditControllerScript gameScript;
 
@@ -104,6 +106,14 @@ public class ButtonScript : MonoBehaviour {
         Transform conditionGrid = addButton.transform.parent.Find("ConditionGrid");
         
         Instantiate(conditionDropdown, conditionGrid);
+    }
+
+    public void AddActionDropdown()
+    {
+        GameObject addButton = EventSystem.current.currentSelectedGameObject;
+        Transform actionGrid = addButton.transform.parent.Find("ActionGrid");
+
+        Instantiate(actionDropdown, actionGrid);
     }
 
     public void SaveAndExit()
