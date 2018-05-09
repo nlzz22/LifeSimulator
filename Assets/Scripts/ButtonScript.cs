@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class ButtonScript : MonoBehaviour {
     // Attributes
@@ -21,9 +22,8 @@ public class ButtonScript : MonoBehaviour {
     [SerializeField]
     private GameObject eventFunctionCanvas;
     [SerializeField]
-    private GameObject eventFunctionGrid;
-    [SerializeField]
     private GameObject eventFunctionField;
+    private GameObject eventFunctionGrid;
 
     // Extras
     [SerializeField]
@@ -32,6 +32,7 @@ public class ButtonScript : MonoBehaviour {
     private GameObject actionDropdown;
 
     private WorldEditControllerScript gameScript;
+    public static GameObject addEventFuncButton;
 
     private WorldEditControllerScript FindGameScript()
     {
@@ -44,6 +45,16 @@ public class ButtonScript : MonoBehaviour {
         {
             return gameScript;
         }
+    }
+
+    private GameObject FindEventFunctionsGrid()
+    {
+        if (eventFunctionGrid == null)
+        {
+            eventFunctionGrid = GameObject.Find("FunctionsGrid");
+        }
+
+        return eventFunctionGrid;
     }
 
     public void PlayGame()
@@ -92,12 +103,32 @@ public class ButtonScript : MonoBehaviour {
         }
     }
 
+    private void toggleChildActive(GameObject parent, bool setToActive)
+    {
+        int numChild = parent.transform.childCount;
+        for (int i = 0; i < numChild; i++)
+        {
+            GameObject child = parent.transform.GetChild(i).gameObject;
+            child.SetActive(setToActive);
+        }
+    }
+
     public void AddEventFunction()
     {
-        if (eventFunctionGrid != null)
+        FindEventFunctionsGrid();
+
+        if (addEventFuncButton == null)
         {
-            Instantiate(eventFunctionField, eventFunctionGrid.transform);
+            addEventFuncButton = EventSystem.current.currentSelectedGameObject;
         }
+        addEventFuncButton.SetActive(false); // hides the button
+
+        // Hides all children first.
+        toggleChildActive(eventFunctionGrid, false);
+
+        // Creates the new event function field for editing.
+        Instantiate(eventFunctionField, eventFunctionGrid.transform);
+
     }
 
     public void AddConditionDropdown()
@@ -116,6 +147,40 @@ public class ButtonScript : MonoBehaviour {
         Instantiate(actionDropdown, actionGrid);
     }
 
+    public void DoneEventFunction()
+    {
+        GameObject doneButton = EventSystem.current.currentSelectedGameObject;
+        // Validate abit.
+
+        GameObject eventFunctionInput = doneButton.transform.parent.gameObject;
+        string eventName = eventFunctionInput.GetComponent<InputField>().text;
+        GameObject feedbackObj = doneButton.transform.Find("Feedback").gameObject;
+
+        // if no event name
+        if (eventName.Trim() == "")
+        {
+            feedbackObj.GetComponent<Text>().text = "Please enter an event name.";
+        } else
+        {
+            feedbackObj.GetComponent<Text>().text = ""; // no error
+            GameObject eventFunctionWhole = eventFunctionInput.transform.parent.gameObject;
+            GameObject eventFunctionRep = eventFunctionWhole.transform.Find("EventFunctionRep").gameObject;
+
+            // Switch from edit one item to overview screen.
+            eventFunctionInput.SetActive(false);
+            eventFunctionRep.SetActive(true);
+
+            GameObject eventFunctionButton = eventFunctionRep.transform.Find("EventFunctionButton").gameObject;
+            // Update overview button with event name.
+            eventFunctionButton.GetComponentInChildren<Text>().text = eventName;
+            // Unhide the "add" event function button.
+            addEventFuncButton.SetActive(true);
+            // Unhides all child of grid.
+            toggleChildActive(FindEventFunctionsGrid(), true);
+        }
+
+    }
+
     public void SaveAndExit()
     {
         FindGameScript().SaveGame();
@@ -128,6 +193,35 @@ public class ButtonScript : MonoBehaviour {
         if (cancelButton != null)
         {
             GameObject.Destroy(cancelButton.transform.parent.gameObject);
+        }
+        else
+        {
+            Debug.Log("BUG: RemoveItem() at ButtonScript has currentSelectedGameObject as null");
+        }
+    }
+
+    public void RemoveItemTwoLevels()
+    {
+        GameObject cancelButton = EventSystem.current.currentSelectedGameObject;
+        if (cancelButton != null)
+        {
+            GameObject firstParent = cancelButton.transform.parent.gameObject;
+            if (firstParent == null)
+            {
+                Debug.Log("first parent of RemoveItemTwoLevels() at ButtonScript is null.");
+            }
+            else
+            {
+                GameObject secondParent = firstParent.transform.parent.gameObject;
+                if (secondParent == null)
+                {
+                    Debug.Log("second parent of RemoveItemTwoLevels() at ButtonScript is null.");
+                }
+                else
+                {
+                    Destroy(secondParent);
+                }
+            }
         }
         else
         {
