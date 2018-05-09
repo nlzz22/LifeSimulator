@@ -9,3 +9,4 @@ NUS FASS SIMULATOR ??
 Game runs on the functions. (event function / action function ??)
 because like if i say is 1% chance to be sick at X age, Y health and Z stress level
 
+
