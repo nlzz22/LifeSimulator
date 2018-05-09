@@ -20,7 +20,6 @@ public class EventFunctionScript
     private string repText;
     private ConditionScript[] conditions;
 
-
     public EventFunctionScript(GameObject eventFunctionWhole)
     {
         Transform rep = eventFunctionWhole.transform.Find("EventFunctionRep");
@@ -64,6 +63,16 @@ public class EventFunctionScript
 
         // Add actions??
         // TODO
+    }
+
+    public string GetEventName()
+    {
+        return repText;
+    }
+
+    public ConditionScript[] GetAllConditions()
+    {
+        return conditions;
     }
     
 }

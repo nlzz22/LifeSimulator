@@ -30,9 +30,35 @@ public class ButtonScript : MonoBehaviour {
     private GameObject conditionDropdown;
     [SerializeField]
     private GameObject actionDropdown;
+    private GameObject mainCanvas;
 
     private WorldEditControllerScript gameScript;
     public static GameObject addEventFuncButton;
+
+    private void Start()
+    {
+        FindMainCanvas();
+    }
+
+    private GameObject FindMainCanvas()
+    {
+        if (mainCanvas == null)
+        {
+            GameObject canvas = GameObject.Find("Main Canvas");
+            if (canvas == null)
+            {
+                canvas = GameObject.Find("ButtonActions").GetComponent<ButtonScript>().GetMainCanvas();
+            }
+            mainCanvas = canvas;
+        }
+
+        return mainCanvas;
+    }
+
+    public GameObject GetMainCanvas()
+    {
+        return mainCanvas;
+    }
 
     private WorldEditControllerScript FindGameScript()
     {
@@ -123,6 +149,8 @@ public class ButtonScript : MonoBehaviour {
         }
         addEventFuncButton.SetActive(false); // hides the button
 
+        FindMainCanvas().SetActive(false); // hides the main canvas.
+
         // Hides all children first.
         toggleChildActive(eventFunctionGrid, false);
 
@@ -175,6 +203,8 @@ public class ButtonScript : MonoBehaviour {
             eventFunctionButton.GetComponentInChildren<Text>().text = eventName;
             // Unhide the "add" event function button.
             addEventFuncButton.SetActive(true);
+            // Unhide the main canvas
+            FindMainCanvas().SetActive(true);
             // Unhides all child of grid.
             toggleChildActive(FindEventFunctionsGrid(), true);
         }

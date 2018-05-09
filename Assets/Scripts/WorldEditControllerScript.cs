@@ -93,6 +93,27 @@ public class WorldEditControllerScript : GameControllerScript
         
     }
 
+    private void BuildTheEventFunctionGrid(EventFunctionScript[] eventfuncs)
+    {
+        for (int i = 0; i < eventfuncs.Length; i++)
+        {
+            EventFunctionScript currEventFunc = eventfuncs[i];
+            string eventName = currEventFunc.GetEventName();
+            Debug.Log("event name is : " + eventName);
+            EventFunctionScript.ConditionScript[] conds = currEventFunc.GetAllConditions();
+            for (int j = 0; j < conds.Length; j++)
+            {
+                EventFunctionScript.ConditionScript cond = conds[j];
+                int dropdownVal = cond.dropdownValue;
+                int secDropVal = cond.secondDropdownValue;
+                string text = cond.textField;
+                string endField = cond.endField;
+                Debug.Log("drop : " + dropdownVal + " second drop : " + secDropVal + " text : " + text + " end : " + endField);
+            }
+            
+        }
+    }
+
     public void SaveGame()
     {
         // Create a Save instance with all the data for the current session saved into it.
@@ -124,6 +145,7 @@ public class WorldEditControllerScript : GameControllerScript
 
             // Load save information into the game state.
             BuildTheAttributeGrid(save.GetAttributes());
+            BuildTheEventFunctionGrid(save.GetEventFunctions());
 
             Debug.Log("Game Loaded");
         }
