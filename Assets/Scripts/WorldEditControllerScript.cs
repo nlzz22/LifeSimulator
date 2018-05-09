@@ -12,10 +12,6 @@ public class WorldEditControllerScript : GameControllerScript
     [SerializeField]
     private GameObject eventFunctionWhole;
     [SerializeField]
-    private GameObject attrInputCond;
-    [SerializeField]
-    private GameObject percentInputCond;
-    [SerializeField]
     private GameObject condDropdown;
 
     private List<string> tempAttributes;
