@@ -13,7 +13,9 @@ public class PlaySceneControllerScript : GameControllerScript
     [SerializeField]
     private GameObject dayTextObject;
     [SerializeField]
-    private GameObject feedbackTextObject;
+    private GameObject feedbackChoiceFuncObject;
+    [SerializeField]
+    private GameObject feedbackEventFuncObject;
     [SerializeField]
     private int numberOfEventsPerDay; // number of events that occur naturally in one day.
     [SerializeField]
@@ -23,16 +25,24 @@ public class PlaySceneControllerScript : GameControllerScript
     private int dayCounter; // a counter to tell when is it time to change to a new day.
 
     private Hashtable attributeTable; // maps attribute name to the game object which controls the value.
+    private List<string> listAttributes; // maps number with attribute name
+    private EventFunctionScript[] eventFunctions; // all event functions stored here.
 
     private static string ATTRIBUTE_NAME = "Attribute Text";
     private static string VALUE_NAME = "Value Text";
     private static string DAY_TEXT = "Day ";
+
+    private static int CONDITION_PERCENTAGE = 1;
+    private static int CONDITION_ATTRIBUTE = 2;
+    private static int ACTION_ATTRIBUTE = 1;
+    private static int ACTION_STATUS = 2;
     
     private void Start()
     {
         dayNumber = 1;
         dayCounter = 0;
         attributeTable = new Hashtable();
+        listAttributes = new List<string>();
         // load the saved values.
         LoadGame();
         StartCoroutine(RunTheDay());
@@ -42,7 +52,7 @@ public class PlaySceneControllerScript : GameControllerScript
     {
         yield return new WaitForSeconds(timeBetweenEvents);
         dayCounter++;
-        // TODO: check for event functions that can occur.
+        CheckEventFunctions();
 
         // if it is time for a new day.
         if (dayCounter >= numberOfEventsPerDay)
@@ -53,6 +63,75 @@ public class PlaySceneControllerScript : GameControllerScript
         }
 
         StartCoroutine(RunTheDay());
+    }
+
+    private bool WillOccurWithChance(int percentage)
+    {
+        return (UnityEngine.Random.Range(1, 100) <= percentage);
+    }
+
+    private int GetCurrentAttributeValue(string attributeName)
+    {
+        GameObject valueController = (GameObject)attributeTable[attributeName];
+        return Int32.Parse(valueController.GetComponent<Text>().text);
+    }
+
+    private void CheckEventFunctions()
+    {
+        foreach(EventFunctionScript eventFunction in eventFunctions)
+        {
+            bool isAllConditionsSatisfied = true;
+            string eventName = eventFunction.GetEventName();
+            EventFunctionScript.ConditionScript[] conditions = eventFunction.GetAllConditions();
+            foreach (EventFunctionScript.ConditionScript condition in conditions)
+            {
+                int conditionType = condition.dropdownValue;
+                if (conditionType == CONDITION_PERCENTAGE)
+                {
+                    string percentageChanceToOccur = condition.textField;
+                    int percentageChance = Int32.Parse(percentageChanceToOccur);
+                    if (!WillOccurWithChance(percentageChance))
+                    {
+                        isAllConditionsSatisfied = false;
+                        break;
+                    }
+                } else if (conditionType == CONDITION_ATTRIBUTE)
+                {
+                    int attributeIndex = condition.secondDropdownValue;
+                    string attributeName = listAttributes[attributeIndex];
+                    string attrStartRangeString = condition.textField;
+                    string attrEndRangeString = condition.endField;
+                    int attrStartRange = Int32.Parse(attrStartRangeString);
+                    int attrEndRange = Int32.Parse(attrEndRangeString);
+                    int currentAttributeValue = GetCurrentAttributeValue(attributeName);
+                    if (currentAttributeValue < attrStartRange || currentAttributeValue > attrEndRange)
+                    {
+                        isAllConditionsSatisfied = false;
+                        break;
+                    }
+                }
+            }
+
+            if (isAllConditionsSatisfied)
+            {
+                // Perform all actions.
+                EventFunctionScript.ActionScript[] actions = eventFunction.GetAllActions();
+                foreach (EventFunctionScript.ActionScript action in actions)
+                {
+                    int actionType = action.dropdownValue;
+                    if (actionType == ACTION_ATTRIBUTE)
+                    {
+                        int attributeIndex = action.secondDropdownValue;
+                        string attributeName = listAttributes[attributeIndex];
+                        int amountToChange = Int32.Parse(action.textField);
+                        ChangeValue(attributeName, amountToChange);
+                    } else if (actionType == ACTION_STATUS)
+                    {
+                        // not yet implemented.
+                    }
+                }
+            }
+        }
     }
 
     public void ChangeValue(string attributeName, int amountToChange)
@@ -82,6 +161,8 @@ public class PlaySceneControllerScript : GameControllerScript
             attributeValue.GetComponent<Text>().text = attribute.GetDefaultValue().ToString();
             // map to hashtable
             attributeTable.Add(attributeNameText, attributeValue);
+            // map to list
+            listAttributes.Add(attributeNameText);
         }
         
     }
@@ -101,6 +182,7 @@ public class PlaySceneControllerScript : GameControllerScript
 
             // Load save information into the game state.
             BuildTheAttributeGrid(save.GetAttributes());
+            eventFunctions = save.GetEventFunctions();
 
             Debug.Log("Game Loaded");
         }
