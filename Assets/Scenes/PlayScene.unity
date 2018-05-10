@@ -610,8 +610,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attributesGrid: {fileID: 702103892}
+  eventFunctionsGrid: {fileID: 0}
   attrFieldPrefab: {fileID: 1535881552267632, guid: 36940e8dcbf0524469f851fe23fd617b,
     type: 2}
+  dayTextObject: {fileID: 1773280284}
+  feedbackTextObject: {fileID: 1418441343}
+  numberOfEventsPerDay: 10
+  timeBetweenEvents: 5
 --- !u!1 &1376113682
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,17 +10,49 @@ public class PlaySceneControllerScript : GameControllerScript
 {
     [SerializeField]
     private GameObject attrFieldPrefab;
+    [SerializeField]
+    private GameObject dayTextObject;
+    [SerializeField]
+    private GameObject feedbackTextObject;
+    [SerializeField]
+    private int numberOfEventsPerDay; // number of events that occur naturally in one day.
+    [SerializeField]
+    private float timeBetweenEvents; // time in seconds between 2 consecutive events happening.
+
+    private int dayNumber; // signify which day it is, as a number.
+    private int dayCounter; // a counter to tell when is it time to change to a new day.
 
     private Hashtable attributeTable; // maps attribute name to the game object which controls the value.
 
     private static string ATTRIBUTE_NAME = "Attribute Text";
     private static string VALUE_NAME = "Value Text";
+    private static string DAY_TEXT = "Day ";
     
     private void Start()
     {
+        dayNumber = 1;
+        dayCounter = 0;
         attributeTable = new Hashtable();
         // load the saved values.
         LoadGame();
+        StartCoroutine(RunTheDay());
+    }
+
+    private IEnumerator RunTheDay()
+    {
+        yield return new WaitForSeconds(timeBetweenEvents);
+        dayCounter++;
+        // TODO: check for event functions that can occur.
+
+        // if it is time for a new day.
+        if (dayCounter >= numberOfEventsPerDay)
+        {
+            dayCounter = 0;
+            dayNumber++;
+            dayTextObject.GetComponent<Text>().text = DAY_TEXT + dayNumber;
+        }
+
+        StartCoroutine(RunTheDay());
     }
 
     public void ChangeValue(string attributeName, int amountToChange)
