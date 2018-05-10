@@ -114,6 +114,10 @@ public class WorldEditControllerScript : GameControllerScript
             Transform eventFuncInput = eventfuncwhole.transform.Find("EventFunctionInput");
             eventFuncInput.GetComponent<InputField>().text = eventName;
 
+            // populate the message display.
+            Transform msgDisplay = eventFuncInput.Find("MessageDisplay");
+            msgDisplay.GetComponent<InputField>().text = currEventFunc.GetMessageDisplay();
+
             // populate conditional statements.
             Transform conditionGrid = eventFuncInput.Find("ConditionGrid");
             Destroy(conditionGrid.GetChild(0).gameObject); // remove all child (it has only 1 child by default)

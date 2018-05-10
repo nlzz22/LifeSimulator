@@ -76,8 +76,21 @@ public class PlaySceneControllerScript : GameControllerScript
         return Int32.Parse(valueController.GetComponent<Text>().text);
     }
 
+    public void UpdateEventFunction(string feedback, bool toAppend)
+    {
+        if (toAppend)
+        {
+            feedbackEventFuncObject.GetComponent<Text>().text += feedback + "\n";
+        } else
+        {
+            feedbackEventFuncObject.GetComponent<Text>().text = feedback + "\n";
+        }
+        
+    }
+
     private void CheckEventFunctions()
     {
+        bool hasAlreadyUpdatedToday = false;
         foreach(EventFunctionScript eventFunction in eventFunctions)
         {
             bool isAllConditionsSatisfied = true;
@@ -130,6 +143,16 @@ public class PlaySceneControllerScript : GameControllerScript
                         // not yet implemented.
                     }
                 }
+
+                if (hasAlreadyUpdatedToday)
+                {
+                    UpdateEventFunction(eventName + " : " + eventFunction.GetMessageDisplay(), true);
+                } else
+                {
+                    hasAlreadyUpdatedToday = true;
+                    UpdateEventFunction(eventName + " : " + eventFunction.GetMessageDisplay(), false);
+                }
+                
             }
         }
     }

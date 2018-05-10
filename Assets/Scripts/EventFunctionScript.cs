@@ -27,6 +27,7 @@ public class EventFunctionScript
     }
 
     private string repText;
+    private string messageDisplay;
     private ConditionScript[] conditions;
     private ActionScript[] actions;
 
@@ -38,8 +39,11 @@ public class EventFunctionScript
         repText = eventFuncBtn.GetComponentInChildren<Text>().text;
         // event function text follows that of reptext, no need to save again.
 
-        // Add conditions.
         Transform input = eventFunctionWhole.transform.Find("EventFunctionInput");
+        Transform msgDisplay = input.Find("MessageDisplay");
+        messageDisplay = msgDisplay.GetComponent<InputField>().text;
+
+        // Add conditions.
         GameObject conditionGrid = input.Find("ConditionGrid").gameObject;
         int numChild = conditionGrid.transform.childCount;
         conditions = new ConditionScript[numChild];
@@ -105,6 +109,11 @@ public class EventFunctionScript
     public string GetEventName()
     {
         return repText;
+    }
+
+    public string GetMessageDisplay()
+    {
+        return messageDisplay;
     }
 
     public ConditionScript[] GetAllConditions()
