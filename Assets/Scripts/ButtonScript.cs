@@ -37,7 +37,11 @@ public class ButtonScript : MonoBehaviour {
 
     private void Start()
     {
-        FindMainCanvas();
+        if (SceneManager.GetActiveScene().name == "WorldEditor")
+        {
+            FindMainCanvas();
+        }
+        
     }
 
     private GameObject FindAddEventFuncBtn()
@@ -55,8 +59,7 @@ public class ButtonScript : MonoBehaviour {
         if (mainCanvas == null)
         {
             GameObject canvas = GameObject.Find("Main Canvas");
-            if (canvas == null && gameObject.name != "ButtonActions") 
-                // if we allow ButtonActions to call this, we arrive at a infinite loop.
+            if (canvas == null)
             {
                 canvas = GameObject.Find("ButtonActions").GetComponent<ButtonScript>().GetMainCanvas();
             }

@@ -37,6 +37,11 @@ public class DropdownAction : MonoBehaviour
 
     public void DropdownValueChanged()
     {
+        if (dropdownself == null)
+        {
+            Start();
+        }
+
         int selectedValue = dropdownself.value;
         if (selectedValue == ATTRIBUTE)
         {

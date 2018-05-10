@@ -13,6 +13,8 @@ public class WorldEditControllerScript : GameControllerScript
     private GameObject eventFunctionWhole;
     [SerializeField]
     private GameObject condDropdown;
+    [SerializeField]
+    private GameObject actnDropdown;
 
     private List<string> tempAttributes;
 
@@ -100,7 +102,7 @@ public class WorldEditControllerScript : GameControllerScript
     private void BuildTheEventFunctionGrid(EventFunctionScript[] eventfuncs)
     {
         for (int i = 0; i < eventfuncs.Length; i++)
-        { // TODO
+        {
             GameObject eventfuncwhole = Instantiate(eventFunctionWhole, eventFunctionsGrid.transform);
             EventFunctionScript currEventFunc = eventfuncs[i];
             string eventName = currEventFunc.GetEventName();
@@ -145,7 +147,36 @@ public class WorldEditControllerScript : GameControllerScript
                 }
             }
 
-            // populate action statements. Todo
+            // populate action statements.
+            Transform actionGrid = eventFuncInput.Find("ActionGrid");
+            Destroy(actionGrid.GetChild(0).gameObject); // remove all child (it has only 1 child by default)
+            EventFunctionScript.ActionScript[] actns = currEventFunc.GetAllActions();
+            for (int j = 0; j < actns.Length; j++)
+            {
+                // retrieve all saved values for population.
+                EventFunctionScript.ActionScript actn = actns[j];
+                int dropdownVal = actn.dropdownValue;
+                int secDropVal = actn.secondDropdownValue;
+                string text = actn.textField;
+
+                // start populating to real world.
+                GameObject actionDropdown = Instantiate(actnDropdown, actionGrid);
+                actionDropdown.GetComponent<Dropdown>().value = dropdownVal;
+                Transform actnAttachment = actionDropdown.transform.Find("ActionAttachment");
+
+                if (dropdownVal == 1) // attribute
+                {
+                    Transform attrInputAction = actnAttachment.GetChild(0);
+                    Transform dropdown = attrInputAction.Find("Dropdown");
+                    Transform changeField = attrInputAction.Find("ChangeField");
+                    dropdown.GetComponent<Dropdown>().value = secDropVal;
+                    changeField.GetComponent<InputField>().text = text;
+
+                }
+                else if (dropdownVal == 2) // status: Not yet implemented.
+                {
+                }
+            }
 
 
             // Hide and unhide the necessary so that rep view is shown.

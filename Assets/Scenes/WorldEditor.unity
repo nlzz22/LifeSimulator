@@ -1177,6 +1177,8 @@ MonoBehaviour:
     type: 2}
   condDropdown: {fileID: 1905319958370262, guid: 31a6fe3b024837e439e8db304c8fad6a,
     type: 2}
+  actnDropdown: {fileID: 1167795167481536, guid: de79221b96981e34480b568065e9dfff,
+    type: 2}
 --- !u!1 &1246785939
 GameObject:
   m_ObjectHideFlags: 0
