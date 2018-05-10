@@ -17,8 +17,18 @@ public class EventFunctionScript
         public string endField; // for attributes only.
     }
 
+    [Serializable]
+    public class ActionScript
+    {
+        public int dropdownValue;
+
+        public int secondDropdownValue;
+        public string textField;
+    }
+
     private string repText;
     private ConditionScript[] conditions;
+    private ActionScript[] actions;
 
     public EventFunctionScript(GameObject eventFunctionWhole)
     {
@@ -61,8 +71,35 @@ public class EventFunctionScript
             conditions[i] = condition;
         }
 
-        // Add actions??
-        // TODO
+        // Add actions
+        GameObject actionGrid = input.Find("ActionGrid").gameObject;
+        int numOfChild = actionGrid.transform.childCount;
+        actions = new ActionScript[numOfChild];
+        for (int i = 0; i < numOfChild; i++)
+        {
+            GameObject actionDropdown = actionGrid.transform.GetChild(i).gameObject;
+            int dropdownValue = actionDropdown.GetComponent<Dropdown>().value;
+            ActionScript action = new ActionScript();
+            action.dropdownValue = dropdownValue;
+            GameObject actionAttachment = actionDropdown.transform.Find("ActionAttachment").gameObject;
+
+            if (dropdownValue == 1) // attribute
+            {
+                Transform attrInputAction = actionAttachment.transform.GetChild(0);
+                Transform secDropdown = attrInputAction.Find("Dropdown");
+                int secDropdownValue = secDropdown.GetComponent<Dropdown>().value;
+                Transform text = attrInputAction.Find("ChangeField");
+                action.secondDropdownValue = secDropdownValue;
+                action.textField = text.GetComponent<InputField>().text;
+            }
+            else if (dropdownValue == 2) // status: not yet implemented.
+            {
+
+            }
+
+            actions[i] = action;
+        }
+
     }
 
     public string GetEventName()
@@ -73,6 +110,11 @@ public class EventFunctionScript
     public ConditionScript[] GetAllConditions()
     {
         return conditions;
+    }
+
+    public ActionScript[] GetAllActions()
+    {
+        return actions;
     }
     
 }

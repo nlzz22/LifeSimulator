@@ -1175,10 +1175,6 @@ MonoBehaviour:
     type: 2}
   eventFunctionWhole: {fileID: 1144051488354148, guid: cfc16bb4e67937d4f9b839042f21119b,
     type: 2}
-  attrInputCond: {fileID: 1502783068263414, guid: e5d1718cf6a69e144ac1b02a7b2ba903,
-    type: 2}
-  percentInputCond: {fileID: 1069758309841148, guid: 2bfac7dbe7d38c44d8959c5545117848,
-    type: 2}
   condDropdown: {fileID: 1905319958370262, guid: 31a6fe3b024837e439e8db304c8fad6a,
     type: 2}
 --- !u!1 &1246785939

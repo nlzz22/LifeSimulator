@@ -55,7 +55,8 @@ public class ButtonScript : MonoBehaviour {
         if (mainCanvas == null)
         {
             GameObject canvas = GameObject.Find("Main Canvas");
-            if (canvas == null)
+            if (canvas == null && gameObject.name != "ButtonActions") 
+                // if we allow ButtonActions to call this, we arrive at a infinite loop.
             {
                 canvas = GameObject.Find("ButtonActions").GetComponent<ButtonScript>().GetMainCanvas();
             }
