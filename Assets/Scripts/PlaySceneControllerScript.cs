@@ -36,6 +36,30 @@ public class PlaySceneControllerScript : GameControllerScript
     private static int CONDITION_ATTRIBUTE = 2;
     private static int ACTION_ATTRIBUTE = 1;
     private static int ACTION_STATUS = 2;
+
+    public class AttributeDisplay
+    {
+        public Transform attributeValueController;
+        public int type;
+        public int limitStart;
+        public int limitEnd;
+        public string[] choices;
+
+        public AttributeDisplay(Transform controller, int type, int start, int end)
+        {
+            attributeValueController = controller;
+            this.type = type;
+            limitStart = start;
+            limitEnd = end;
+        }
+
+        public AttributeDisplay(Transform controller, int type, string[] choices)
+        {
+            attributeValueController = controller;
+            this.type = type;
+            this.choices = choices;
+        }
+    }
     
     private void Start()
     {
@@ -72,7 +96,7 @@ public class PlaySceneControllerScript : GameControllerScript
 
     private int GetCurrentAttributeValue(string attributeName)
     {
-        GameObject valueController = (GameObject)attributeTable[attributeName];
+        Transform valueController = ((AttributeDisplay)attributeTable[attributeName]).attributeValueController;
         return Int32.Parse(valueController.GetComponent<Text>().text);
     }
 
@@ -161,10 +185,44 @@ public class PlaySceneControllerScript : GameControllerScript
     {
         if (attributeTable.ContainsKey(attributeName))
         {
-            GameObject valueController = (GameObject) attributeTable[attributeName];
+            Transform valueController = ((AttributeDisplay)attributeTable[attributeName]).attributeValueController;
             string previousValue = valueController.GetComponent<Text>().text;
             int newValue = Int32.Parse(previousValue) + amountToChange;
-            valueController.GetComponent<Text>().text = newValue.ToString();
+
+            int limitStart = ((AttributeDisplay)attributeTable[attributeName]).limitStart;
+            int limitEnd = ((AttributeDisplay)attributeTable[attributeName]).limitEnd;
+
+            int finalValue = (int) Mathf.Clamp(newValue, limitStart, limitEnd);
+
+            valueController.GetComponent<Text>().text = finalValue.ToString();
+        }
+    }
+
+    public void ChangeDiscreteValue(string attributeName, bool canRepeat)
+    {
+        if (attributeTable.ContainsKey(attributeName))
+        {
+            Transform valueController = ((AttributeDisplay)attributeTable[attributeName]).attributeValueController;
+            string[] choices = ((AttributeDisplay)attributeTable[attributeName]).choices;
+            
+            int numChoices = choices.Length;
+            int randomChoice = UnityEngine.Random.Range(0, numChoices);
+
+            if (canRepeat)
+            {
+                valueController.GetComponent<Text>().text = choices[randomChoice];
+            }
+            else
+            {
+                string previousValue = valueController.GetComponent<Text>().text;
+                string newValue = choices[randomChoice];
+                if (previousValue == newValue)
+                {
+                    newValue = choices[(randomChoice + 1) % numChoices];
+                }
+
+                valueController.GetComponent<Text>().text = newValue;
+            }
         }
     }
 
@@ -174,16 +232,29 @@ public class PlaySceneControllerScript : GameControllerScript
         {
             // create the attribute field 
             GameObject field = Instantiate(attrFieldPrefab, attributesGrid.transform);
-            // field.transform.SetParent(attributesGrid.transform);
             // set the text field.
-            GameObject attributeName = field.transform.Find(ATTRIBUTE_NAME).gameObject;
+            Transform attributeName = field.transform.Find(ATTRIBUTE_NAME);
             string attributeNameText = attribute.GetAttributeName();
             attributeName.GetComponent<Text>().text = attributeNameText;
             // set the default value.
-            GameObject attributeValue = field.transform.Find(VALUE_NAME).gameObject;
-            //attributeValue.GetComponent<Text>().text = attribute.GetDefaultValue().ToString();
-            // map to hashtable
-            attributeTable.Add(attributeNameText, attributeValue);
+            Transform attributeValue = field.transform.Find(VALUE_NAME);
+            int attrType = attribute.GetAttributeType();
+            if (attrType == 1) // discrete
+            {
+                string[] choices = attribute.GetAttributeChoiceNames();
+                int numChoices = choices.Length;
+                attributeValue.GetComponent<Text>().text = choices[UnityEngine.Random.Range(0, numChoices)];
+                // map to hashtable
+                attributeTable.Add(attributeNameText, new AttributeDisplay(attributeValue, attrType, choices));
+            } else if (attrType == 2) // continuous
+            {
+                int startAssign, endAssign, startLimit, endLimit;
+                attribute.GetRangesForContinuous(out startAssign, out endAssign, out startLimit, out endLimit);
+                attributeValue.GetComponent<Text>().text = UnityEngine.Random.Range(startAssign, endAssign + 1).ToString();
+                // map to hashtable
+                attributeTable.Add(attributeNameText, new AttributeDisplay(attributeValue, attrType, startLimit, endLimit));
+            }
+
             // map to list
             listAttributes.Add(attributeNameText);
         }
