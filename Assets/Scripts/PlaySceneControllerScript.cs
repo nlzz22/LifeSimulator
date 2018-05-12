@@ -181,7 +181,7 @@ public class PlaySceneControllerScript : GameControllerScript
             attributeName.GetComponent<Text>().text = attributeNameText;
             // set the default value.
             GameObject attributeValue = field.transform.Find(VALUE_NAME).gameObject;
-            attributeValue.GetComponent<Text>().text = attribute.GetDefaultValue().ToString();
+            //attributeValue.GetComponent<Text>().text = attribute.GetDefaultValue().ToString();
             // map to hashtable
             attributeTable.Add(attributeNameText, attributeValue);
             // map to list

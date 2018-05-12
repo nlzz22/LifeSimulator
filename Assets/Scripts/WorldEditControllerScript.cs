@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -24,27 +25,51 @@ public class WorldEditControllerScript : GameControllerScript
         LoadGame();
     }
 
+    private AttributeScript[] GetAttributesGridValues()
+    {
+        int numberOfChildren = attributesGrid.transform.childCount;
+        AttributeScript[] attributes = new AttributeScript[numberOfChildren];
+
+        for (int i = 0; i < numberOfChildren; i++)
+        {
+            Transform currChild = attributesGrid.transform.GetChild(i);
+            string currentAttrName = currChild.GetComponent<InputField>().text;
+            Transform currAttrType = currChild.Find("DropdownAttrType");
+            int currentAttrTypeValue = (int)currAttrType.GetComponentInChildren<Dropdown>().value;
+            Transform currDropdownAttrAttachment = currAttrType.Find("DropdownAttrAttachment");
+            if (currentAttrTypeValue == 1) // discrete
+            {
+                Transform parentOfFields = currDropdownAttrAttachment.GetChild(0).Find("Scroll View").
+                    Find("Viewport").Find("Content");
+                int numChild = parentOfFields.childCount;
+                string[] choices = new string[numChild];
+                for (int j = 0; j < numChild; j++)
+                {
+                    choices[j] = parentOfFields.GetChild(j).GetComponent<InputField>().text;
+                }
+                attributes[i] = new AttributeScript(currentAttrName, currentAttrTypeValue, choices);
+            }
+            else if (currentAttrTypeValue == 2) // continuous
+            {
+                Transform continuousAttrParent = currDropdownAttrAttachment.GetChild(0);
+                string assignedStart = continuousAttrParent.Find("AssignedStartField").GetComponent<InputField>().text;
+                string assignedEnd = continuousAttrParent.Find("AssignedEndField").GetComponent<InputField>().text;
+                string limitStart = continuousAttrParent.Find("LimitStartField").GetComponent<InputField>().text;
+                string limitEnd = continuousAttrParent.Find("LimitEndField").GetComponent<InputField>().text;
+                attributes[i] = new AttributeScript(currentAttrName, currentAttrTypeValue, 
+                    Int32.Parse(assignedStart), Int32.Parse(assignedEnd), 
+                    Int32.Parse(limitStart), Int32.Parse(limitEnd));
+            }
+        }
+
+        return attributes;
+    }
+
     // Create the Save object, and put data to store into it.
     private Save CreateSaveGameObject()
     {
         Save save = new Save();
-        List<AttributeScript> attributes = new List<AttributeScript>();
-
-        int numberOfChildren = attributesGrid.transform.childCount;
-        for (int i = 0; i < numberOfChildren; i++)
-        {
-            GameObject currChild = attributesGrid.transform.GetChild(i).gameObject;
-            string currentAttrName = currChild.GetComponent<InputField>().text;
-            int currentAttrValue = (int)currChild.GetComponentInChildren<Slider>().value;
-
-            // if attribute is not empty.
-            if (currentAttrName.Trim() != "")
-            {
-                attributes.Add(new AttributeScript(currentAttrName, currentAttrValue));
-            }
-        }
-
-        save.SaveAttributes(attributes.ToArray());
+        save.SaveAttributes(GetAttributesGridValues());
 
         List<EventFunctionScript> eventFuncs = new List<EventFunctionScript>();
         int numChild = eventFunctionsGrid.transform.childCount;
@@ -89,12 +114,44 @@ public class WorldEditControllerScript : GameControllerScript
         foreach (AttributeScript attribute in attributes)
         {
             // create the attribute field 
-            GameObject field = Instantiate(attrFieldPrefab);
-            field.transform.SetParent(attributesGrid.transform);
+            GameObject field = Instantiate(attrFieldPrefab, attributesGrid.transform);
+            Transform dropdownAttrType = field.transform.Find("DropdownAttrType");
+            Transform dropdownAttrAttach = dropdownAttrType.Find("DropdownAttrAttachment");
+
             // set the text field.
             field.GetComponent<InputField>().text = attribute.GetAttributeName();
-            // set the value for slider.
-            field.GetComponentInChildren<Slider>().value = attribute.GetDefaultValue();
+            // set the attribute type (dropdown)
+            int attrType = attribute.GetAttributeType();
+            dropdownAttrType.GetComponent<Dropdown>().value = attrType;
+            
+            if (attrType == 1) // discrete
+            {
+                Transform dropdownDiscreteAttr = dropdownAttrAttach.GetChild(0);
+                string[] choices = attribute.GetAttributeChoiceNames();
+                dropdownDiscreteAttr.GetComponent<Dropdown>().value = choices.Length - 2;
+                Transform parentOfFields = dropdownDiscreteAttr.Find("Scroll View").Find("Viewport").
+                    Find("Content");
+                for (int i = 0; i < choices.Length; i++)
+                {
+                    parentOfFields.GetChild(i).GetComponent<InputField>().text = choices[i];
+                }
+            } else if (attrType == 2) // continuous
+            {
+                Transform continuousAttr = dropdownAttrAttach.GetChild(0);
+                Transform assignedStartTransform = continuousAttr.Find("AssignedStartField");
+                Transform assignedEndTransform = continuousAttr.Find("AssignedEndField");
+                Transform limitStartTransform = continuousAttr.Find("LimitStartField");
+                Transform limitEndTransform = continuousAttr.Find("LimitEndField");
+                int assignedStartValue, assignedEndValue, limitStartValue, limitEndValue;
+
+                attribute.GetRangesForContinuous(out assignedStartValue, out assignedEndValue, 
+                    out limitStartValue, out limitEndValue);
+
+                assignedStartTransform.GetComponent<InputField>().text = assignedStartValue.ToString();
+                assignedEndTransform.GetComponent<InputField>().text = assignedEndValue.ToString();
+                limitStartTransform.GetComponent<InputField>().text = limitStartValue.ToString();
+                limitEndTransform.GetComponent<InputField>().text = limitEndValue.ToString();
+            }
         }
         
     }
