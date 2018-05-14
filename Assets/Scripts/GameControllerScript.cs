@@ -18,7 +18,10 @@ public abstract class GameControllerScript : MonoBehaviour {
 
     private void Awake()
     {
-        saveFileLocation = Application.persistentDataPath + saveFileName;
+        saveFileLocation = Application.dataPath + saveFileName;
+        // Application.persistentDataPath will store in AppData, making it hard to be
+        // transferrable across computers.
+        Debug.Log("Save file location is at : " + saveFileLocation);
     }
 
 }
