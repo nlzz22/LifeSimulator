@@ -288,13 +288,13 @@ public class PlaySceneControllerScript : GameControllerScript
     public override void LoadGame()
     {
         // Checks to see that the save file exists.
-        if (File.Exists(Application.persistentDataPath + saveFileName))
+        if (File.Exists(saveFileLocation))
         {
             // Similar to what you did when saving the game, you again create a BinaryFormatter, 
             // only this time you are providing it with a stream of bytes to read instead of write.
             // So you simply pass it the path to the save file. It creates the Save object and closes the FileStream.
             BinaryFormatter bf = new BinaryFormatter();
-            FileStream file = File.Open(Application.persistentDataPath + saveFileName, FileMode.Open);
+            FileStream file = File.Open(saveFileLocation, FileMode.Open);
             Save save = (Save)bf.Deserialize(file);
             file.Close();
 

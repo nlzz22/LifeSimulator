@@ -12,7 +12,13 @@ public abstract class GameControllerScript : MonoBehaviour {
     protected GameObject eventFunctionsGrid;
 
     protected static string saveFileName = "/worldeditor.data";
+    protected string saveFileLocation;
 
     public abstract void LoadGame();
-    
+
+    private void Awake()
+    {
+        saveFileLocation = Application.persistentDataPath + saveFileName;
+    }
+
 }
