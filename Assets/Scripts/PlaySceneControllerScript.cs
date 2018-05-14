@@ -23,6 +23,7 @@ public class PlaySceneControllerScript : GameControllerScript
 
     private int dayNumber; // signify which day it is, as a number.
     private int dayCounter; // a counter to tell when is it time to change to a new day.
+    private bool isAutomaticNextDay; // true: next day triggered by time. false: next day triggered by button press.
 
     private Hashtable attributeTable; // maps attribute name to the game object which controls the value.
     private List<string> listAttributes; // maps number with attribute name
@@ -65,16 +66,15 @@ public class PlaySceneControllerScript : GameControllerScript
     {
         dayNumber = 1;
         dayCounter = 0;
+        isAutomaticNextDay = false;
         attributeTable = new Hashtable();
         listAttributes = new List<string>();
         // load the saved values.
         LoadGame();
-        StartCoroutine(RunTheDay());
     }
 
-    private IEnumerator RunTheDay()
+    public void PassOneCounter()
     {
-        yield return new WaitForSeconds(timeBetweenEvents);
         dayCounter++;
         CheckEventFunctions();
 
@@ -85,8 +85,32 @@ public class PlaySceneControllerScript : GameControllerScript
             dayNumber++;
             dayTextObject.GetComponent<Text>().text = DAY_TEXT + dayNumber;
         }
+    }
 
-        StartCoroutine(RunTheDay());
+    private void ActivateAutomaticDayRun()
+    {
+        StartCoroutine(AutomaticRunDay());
+    }
+
+    public void SetAutomaticNextDay(bool isAutomatic)
+    {
+        isAutomaticNextDay = isAutomatic;
+        if (isAutomaticNextDay)
+        {
+            ActivateAutomaticDayRun();
+        }
+    } 
+
+    private IEnumerator AutomaticRunDay()
+    {
+        yield return new WaitForSeconds(timeBetweenEvents);
+
+        // confirms that next day should be run automatically.
+        if (isAutomaticNextDay)
+        {
+            PassOneCounter();
+            StartCoroutine(AutomaticRunDay());
+        }
     }
 
     private bool WillOccurWithChance(int percentage)
