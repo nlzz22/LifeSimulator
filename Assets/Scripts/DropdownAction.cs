@@ -17,7 +17,6 @@ public class DropdownAction : MonoBehaviour
 
     // to correspond with options at the dropdown object.
     private static int ATTRIBUTE = 1;
-    private static int STATUS = 2;
 
     private void Start()
     {
@@ -47,12 +46,6 @@ public class DropdownAction : MonoBehaviour
         {
             RemoveAllChild(actionAttachment);
             Instantiate(attributeActionPrefab, actionAttachment.transform);
-        }
-        else if (selectedValue == STATUS)
-        {
-            RemoveAllChild(actionAttachment);
-            // TODO
-            //Instantiate(statusActionPrefab, actionAttachment.transform);
         }
     }
 }

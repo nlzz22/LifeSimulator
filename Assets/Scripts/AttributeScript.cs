@@ -7,7 +7,10 @@ using System;
 public class AttributeScript
 {
     private string attributeName;
-    private int attributeType; // 1 discrete, 2 continuous
+    private int attributeType;
+
+    public static int ATTRIBUTE_TYPE_DISCRETE = 1;
+    public static int ATTRIBUTE_TYPE_CONTINUOUS = 2;
 
     // for discrete attributes.
     private string[] attributeChoiceNames;
@@ -23,7 +26,7 @@ public class AttributeScript
     {
         this.attributeName = attributeName;
         this.attributeType = attributeType;
-        if (attributeType != 1)
+        if (attributeType != ATTRIBUTE_TYPE_DISCRETE)
         {
             Debug.Log("error in initialising attribute script, non discrete type found.");
         }
@@ -36,7 +39,7 @@ public class AttributeScript
     {
         this.attributeName = attributeName;
         this.attributeType = attributeType;
-        if (attributeType != 2)
+        if (attributeType != ATTRIBUTE_TYPE_CONTINUOUS)
         {
             Debug.Log("error in initialising attribute script, non continuous type found.");
         }

@@ -601,8 +601,6 @@ MonoBehaviour:
     m_Options:
     - m_Text: Select one...
       m_Image: {fileID: 0}
-    - m_Text: Percentage
-      m_Image: {fileID: 0}
     - m_Text: Attribute
       m_Image: {fileID: 0}
   m_OnValueChanged:
@@ -830,8 +828,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de38334d970c3e940a887c7b81bcf3fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  percentConditionalPrefab: {fileID: 1069758309841148, guid: 2bfac7dbe7d38c44d8959c5545117848,
-    type: 2}
   attributeConditionalPrefab: {fileID: 1502783068263414, guid: e5d1718cf6a69e144ac1b02a7b2ba903,
     type: 2}
 --- !u!114 &114941295375690114
@@ -1018,7 +1014,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -122, y: 0}
+  m_AnchoredPosition: {x: -111.3, y: 0}
   m_SizeDelta: {x: 50, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224079811296813130
@@ -1072,7 +1068,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 170, y: 0}
+  m_AnchoredPosition: {x: 158.1, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!224 &224204965427918366

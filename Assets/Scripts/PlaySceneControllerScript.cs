@@ -263,14 +263,14 @@ public class PlaySceneControllerScript : GameControllerScript
             // set the default value.
             Transform attributeValue = field.transform.Find(VALUE_NAME);
             int attrType = attribute.GetAttributeType();
-            if (attrType == 1) // discrete
+            if (attrType == AttributeScript.ATTRIBUTE_TYPE_DISCRETE)
             {
                 string[] choices = attribute.GetAttributeChoiceNames();
                 int numChoices = choices.Length;
                 attributeValue.GetComponent<Text>().text = choices[UnityEngine.Random.Range(0, numChoices)];
                 // map to hashtable
                 attributeTable.Add(attributeNameText, new AttributeDisplay(attributeValue, attrType, choices));
-            } else if (attrType == 2) // continuous
+            } else if (attrType == AttributeScript.ATTRIBUTE_TYPE_CONTINUOUS)
             {
                 int startAssign, endAssign, startLimit, endLimit;
                 attribute.GetRangesForContinuous(out startAssign, out endAssign, out startLimit, out endLimit);

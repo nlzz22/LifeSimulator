@@ -91,7 +91,7 @@ public class ButtonScript : MonoBehaviour {
     {
         if (eventFunctionGrid == null)
         {
-            eventFunctionGrid = GameObject.Find("FunctionsGrid");
+            eventFunctionGrid = GameObject.Find("Content (Functions Grid)");
         }
 
         return eventFunctionGrid;
@@ -176,7 +176,8 @@ public class ButtonScript : MonoBehaviour {
     public void AddConditionDropdown()
     {
         GameObject addButton = EventSystem.current.currentSelectedGameObject;
-        Transform conditionGrid = addButton.transform.parent.Find("ConditionGrid");
+        Transform conditionGrid = addButton.transform.parent.Find("Scroll View(Condition)").
+            Find("Viewport").Find("ConditionGrid");
         
         Instantiate(conditionDropdown, conditionGrid);
     }
@@ -184,7 +185,8 @@ public class ButtonScript : MonoBehaviour {
     public void AddActionDropdown()
     {
         GameObject addButton = EventSystem.current.currentSelectedGameObject;
-        Transform actionGrid = addButton.transform.parent.Find("ActionGrid");
+        Transform actionGrid = addButton.transform.parent.Find("Scroll View(Action)").
+            Find("Viewport").Find("ActionGrid");
 
         Instantiate(actionDropdown, actionGrid);
     }

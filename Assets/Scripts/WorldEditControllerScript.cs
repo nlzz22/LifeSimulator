@@ -17,7 +17,7 @@ public class WorldEditControllerScript : GameControllerScript
     [SerializeField]
     private GameObject actnDropdown;
 
-    private List<string> tempAttributes;
+    private AttributeScript[] tempAttributes;
 
     private void Start()
     {
@@ -37,7 +37,7 @@ public class WorldEditControllerScript : GameControllerScript
             Transform currAttrType = currChild.Find("DropdownAttrType");
             int currentAttrTypeValue = (int)currAttrType.GetComponentInChildren<Dropdown>().value;
             Transform currDropdownAttrAttachment = currAttrType.Find("DropdownAttrAttachment");
-            if (currentAttrTypeValue == 1) // discrete
+            if (currentAttrTypeValue == AttributeScript.ATTRIBUTE_TYPE_DISCRETE)
             {
                 Transform parentOfFields = currDropdownAttrAttachment.GetChild(0).Find("Scroll View").
                     Find("Viewport").Find("Content");
@@ -49,7 +49,7 @@ public class WorldEditControllerScript : GameControllerScript
                 }
                 attributes[i] = new AttributeScript(currentAttrName, currentAttrTypeValue, choices);
             }
-            else if (currentAttrTypeValue == 2) // continuous
+            else if (currentAttrTypeValue == AttributeScript.ATTRIBUTE_TYPE_CONTINUOUS)
             {
                 Transform continuousAttrParent = currDropdownAttrAttachment.GetChild(0);
                 string assignedStart = continuousAttrParent.Find("AssignedStartField").GetComponent<InputField>().text;
@@ -88,23 +88,10 @@ public class WorldEditControllerScript : GameControllerScript
 
     public void CacheAttributes()
     {
-        tempAttributes = new List<string>();
-
-        int numberOfChildren = attributesGrid.transform.childCount;
-        for (int i = 0; i < numberOfChildren; i++)
-        {
-            GameObject currChild = attributesGrid.transform.GetChild(i).gameObject;
-            string currentAttrName = currChild.GetComponent<InputField>().text;
-
-            // if attribute is not empty.
-            if (currentAttrName.Trim() != "")
-            {
-                tempAttributes.Add(currentAttrName);
-            }
-        }
+        tempAttributes = GetAttributesGridValues();
     }
 
-    public List<string> GetCachedAttributes()
+    public AttributeScript[] GetCachedAttributes()
     {
         return tempAttributes;
     }
@@ -124,7 +111,7 @@ public class WorldEditControllerScript : GameControllerScript
             int attrType = attribute.GetAttributeType();
             dropdownAttrType.GetComponent<Dropdown>().value = attrType;
             
-            if (attrType == 1) // discrete
+            if (attrType == AttributeScript.ATTRIBUTE_TYPE_DISCRETE) // discrete
             {
                 Transform dropdownDiscreteAttr = dropdownAttrAttach.GetChild(0);
                 string[] choices = attribute.GetAttributeChoiceNames();
@@ -135,7 +122,7 @@ public class WorldEditControllerScript : GameControllerScript
                 {
                     parentOfFields.GetChild(i).GetComponent<InputField>().text = choices[i];
                 }
-            } else if (attrType == 2) // continuous
+            } else if (attrType == AttributeScript.ATTRIBUTE_TYPE_CONTINUOUS) // continuous
             {
                 Transform continuousAttr = dropdownAttrAttach.GetChild(0);
                 Transform assignedStartTransform = continuousAttr.Find("AssignedStartField");

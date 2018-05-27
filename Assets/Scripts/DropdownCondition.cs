@@ -11,13 +11,10 @@ public class DropdownCondition : MonoBehaviour
     private GameObject conditionalAttachment;
 
     [SerializeField]
-    private GameObject percentConditionalPrefab;
-    [SerializeField]
     private GameObject attributeConditionalPrefab;
 
     // to correspond with options at the dropdown object.
-    private static int PERCENTAGE = 1;
-    private static int ATTRIBUTE = 2;
+    private static int ATTRIBUTE = 1;
 
     private void Start()
     {
@@ -43,12 +40,7 @@ public class DropdownCondition : MonoBehaviour
         }
 
         int selectedValue = dropdownself.value;
-        if (selectedValue == PERCENTAGE)
-        {
-            RemoveAllChild(conditionalAttachment);
-            Instantiate(percentConditionalPrefab, conditionalAttachment.transform);
-        }
-        else if (selectedValue == ATTRIBUTE)
+        if (selectedValue == ATTRIBUTE)
         {
             RemoveAllChild(conditionalAttachment);
             Instantiate(attributeConditionalPrefab, conditionalAttachment.transform);
