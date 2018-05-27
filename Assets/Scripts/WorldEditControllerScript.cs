@@ -163,7 +163,7 @@ public class WorldEditControllerScript : GameControllerScript
             msgDisplay.GetComponent<InputField>().text = currEventFunc.GetMessageDisplay();
 
             // populate conditional statements.
-            Transform conditionGrid = eventFuncInput.Find("ConditionGrid");
+            Transform conditionGrid = eventFuncInput.Find("Scroll View(Condition)").Find("Viewport").Find("ConditionGrid");
             Destroy(conditionGrid.GetChild(0).gameObject); // remove all child (it has only 1 child by default)
             EventFunctionScript.ConditionScript[] conds = currEventFunc.GetAllConditions();
             for (int j = 0; j < conds.Length; j++)
@@ -172,30 +172,43 @@ public class WorldEditControllerScript : GameControllerScript
                 EventFunctionScript.ConditionScript cond = conds[j];
                 int dropdownVal = cond.dropdownValue;
                 int secDropVal = cond.secondDropdownValue;
-                string text = cond.textField;
-                string endField = cond.endField;
+                int attributeType = cond.attrType;
 
                 // start populating to real world.
                 GameObject conditionalDropdown = Instantiate(condDropdown, conditionGrid);
                 conditionalDropdown.GetComponent<Dropdown>().value = dropdownVal;
                 Transform condAttachment = conditionalDropdown.transform.Find("ConditionalAttachment");
 
-                if (dropdownVal == 1) // percentage
-                {
-                    condAttachment.GetComponentInChildren<InputField>().text = text;
-                } else if (dropdownVal == 2) // attribute
+                if (dropdownVal == 1)  // attribute
                 {
                     Transform attrInputCond = condAttachment.GetChild(0);
                     Transform dropdown = attrInputCond.Find("Dropdown");
-                    Transform start = attrInputCond.Find("RangeStartField");
-                    Transform end = attrInputCond.Find("RangeEndField");
+                     
                     dropdown.GetComponent<Dropdown>().value = secDropVal;
-                    start.GetComponent<InputField>().text = text;
-                    end.GetComponent<InputField>().text = endField;
+                    dropdown.GetComponent<DropdownAttributeCondition>().type = attributeType;
+                    dropdown.GetComponent<DropdownAttributeCondition>().attributeIndexSelected = secDropVal;
+                    if (attributeType == AttributeScript.ATTRIBUTE_TYPE_CONTINUOUS)
+                    {
+                        int x1Value = cond.x1Val;
+                        float y1Percent = cond.y1Percent;
+                        int x2Value = cond.x2Val;
+                        float y2Percent = cond.y2Percent;
+                        Transform continuousCase = attrInputCond.Find("ContinuousCase");
+                        continuousCase.Find("X(Value)1").GetComponent<InputField>().text = x1Value.ToString();
+                        continuousCase.Find("X(Value)2").GetComponent<InputField>().text = x2Value.ToString();
+                        continuousCase.Find("Y(Percent)1").GetComponent<InputField>().text = y1Percent.ToString();
+                        continuousCase.Find("Y(Percent)2").GetComponent<InputField>().text = y2Percent.ToString();
+                    }
+                    else if (attributeType == AttributeScript.ATTRIBUTE_TYPE_DISCRETE)
+                    {
+                        float[] percentages = cond.discretePercents;
+                        // only update when data is populated.
+                        dropdown.GetComponent<DropdownAttributeCondition>().percentagesFeed = percentages;
+                    }
                 }
-            }
 
             // populate action statements.
+            /*
             Transform actionGrid = eventFuncInput.Find("ActionGrid");
             Destroy(actionGrid.GetChild(0).gameObject); // remove all child (it has only 1 child by default)
             EventFunctionScript.ActionScript[] actns = currEventFunc.GetAllActions();
@@ -223,7 +236,7 @@ public class WorldEditControllerScript : GameControllerScript
                 }
                 else if (dropdownVal == 2) // status: Not yet implemented.
                 {
-                }
+                }*/
             }
 
 

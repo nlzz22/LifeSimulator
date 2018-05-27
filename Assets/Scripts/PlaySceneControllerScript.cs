@@ -138,6 +138,7 @@ public class PlaySceneControllerScript : GameControllerScript
 
     private void CheckEventFunctions()
     {
+        /*
         bool hasAlreadyUpdatedToday = false;
         foreach(EventFunctionScript eventFunction in eventFunctions)
         {
@@ -203,6 +204,7 @@ public class PlaySceneControllerScript : GameControllerScript
                 
             }
         }
+        */
     }
 
     public void ChangeValue(string attributeName, int amountToChange)

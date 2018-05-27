@@ -12,9 +12,17 @@ public class EventFunctionScript
     {
         public int dropdownValue;
 
-        public int secondDropdownValue; // for attributes only
-        public string textField; // for both attributes and percentage.
-        public string endField; // for attributes only.
+        public int secondDropdownValue; // attribute
+
+        // Attribute only.
+        public int attrType;
+        // For continuous attributes.
+        public int x1Val;
+        public float y1Percent;
+        public int x2Val;
+        public float y2Percent;
+        // for discrete attributes.
+        public float[] discretePercents;
     }
 
     [Serializable]
@@ -44,7 +52,8 @@ public class EventFunctionScript
         messageDisplay = msgDisplay.GetComponent<InputField>().text;
 
         // Add conditions.
-        GameObject conditionGrid = input.Find("ConditionGrid").gameObject;
+        GameObject conditionGrid = input.Find("Scroll View(Condition)").
+            Find("Viewport").Find("ConditionGrid").gameObject;
         int numChild = conditionGrid.transform.childCount;
         conditions = new ConditionScript[numChild];
         for (int i = 0; i < numChild; i++)
@@ -55,27 +64,46 @@ public class EventFunctionScript
             condition.dropdownValue = dropdownValue;
             GameObject conditionalAttachment = conditionDropdown.transform.Find("ConditionalAttachment").gameObject;
 
-            if (dropdownValue == 1) // percentage
-            {
-                string value = conditionalAttachment.transform.GetChild(0).Find("InputField").
-                    GetComponent<InputField>().text;
-                condition.textField = value;
-            } else if (dropdownValue == 2) // attribute
+            if (dropdownValue == 1) // attribute
             {
                 Transform attrInputCond = conditionalAttachment.transform.GetChild(0);
                 Transform secDropdown = attrInputCond.Find("Dropdown");
                 int secDropdownValue = secDropdown.GetComponent<Dropdown>().value;
-                Transform rangeStart = attrInputCond.Find("RangeStartField");
-                Transform rangeEnd = attrInputCond.Find("RangeEndField");
+                int type = secDropdown.GetComponent<DropdownAttributeCondition>().type;
+
+                if (type == AttributeScript.ATTRIBUTE_TYPE_DISCRETE)
+                {
+                    GameObject discreteCase = attrInputCond.Find("DiscreteCase").gameObject;
+                    Transform contentParent = discreteCase.transform.Find("Scroll View").Find("Viewport").Find("Content");
+                    int discreteChild = contentParent.childCount;
+                    condition.discretePercents = new float[discreteChild];
+                    for (int j = 0; j < discreteChild; j++)
+                    {
+                        condition.discretePercents[j] = Convert.ToSingle(contentParent.GetChild(j).Find("InputField").
+                            GetComponent<InputField>().text);
+                    }
+                } else if (type == AttributeScript.ATTRIBUTE_TYPE_CONTINUOUS)
+                {
+                    Transform continuousCase = attrInputCond.Find("ContinuousCase");
+                    string xValue1 = continuousCase.Find("X(Value)1").GetComponent<InputField>().text;
+                    string xValue2 = continuousCase.Find("X(Value)2").GetComponent<InputField>().text;
+                    string yPercent1 = continuousCase.Find("Y(Percent)1").GetComponent<InputField>().text;
+                    string yPercent2 = continuousCase.Find("Y(Percent)2").GetComponent<InputField>().text;
+                    condition.x1Val = Int32.Parse(xValue1);
+                    condition.x2Val = Int32.Parse(xValue2);
+                    condition.y1Percent = Convert.ToSingle(yPercent1);
+                    condition.y2Percent = Convert.ToSingle(yPercent2);
+                }
+
                 condition.secondDropdownValue = secDropdownValue;
-                condition.textField = rangeStart.GetComponent<InputField>().text;
-                condition.endField = rangeEnd.GetComponent<InputField>().text;
+                condition.attrType = type;
             }
 
             conditions[i] = condition;
         }
 
         // Add actions
+        /*
         GameObject actionGrid = input.Find("ActionGrid").gameObject;
         int numOfChild = actionGrid.transform.childCount;
         actions = new ActionScript[numOfChild];
@@ -102,7 +130,7 @@ public class EventFunctionScript
             }
 
             actions[i] = action;
-        }
+        }*/
 
     }
 
