@@ -33,10 +33,8 @@ public class PlaySceneControllerScript : GameControllerScript
     private static string VALUE_NAME = "Value Text";
     private static string DAY_TEXT = "Day ";
 
-    private static int CONDITION_PERCENTAGE = 1;
-    private static int CONDITION_ATTRIBUTE = 2;
+    private static int CONDITION_ATTRIBUTE = 1;
     private static int ACTION_ATTRIBUTE = 1;
-    private static int ACTION_STATUS = 2;
 
     public class AttributeDisplay
     {
@@ -113,15 +111,31 @@ public class PlaySceneControllerScript : GameControllerScript
         }
     }
 
-    private bool WillOccurWithChance(int percentage)
+    private bool WillOccurWithChance(float percentage)
     {
-        return (UnityEngine.Random.Range(1, 100) <= percentage);
+        return (UnityEngine.Random.Range(0.0f, 1.0f) <= (percentage / 100.0));
     }
 
-    private int GetCurrentAttributeValue(string attributeName)
+    private string GetCurrentAttributeValue(string attributeName)
     {
         Transform valueController = ((AttributeDisplay)attributeTable[attributeName]).attributeValueController;
-        return Int32.Parse(valueController.GetComponent<Text>().text);
+
+        return valueController.GetComponent<Text>().text;
+    }
+
+    private int GetAttributeValueIndex(string attributeName, string attributeValue)
+    {
+        string[] attrDisplays = ((AttributeDisplay)attributeTable[attributeName]).choices;  
+
+        for (int i = 0; i < attrDisplays.Length; i++)
+        {
+            if (attrDisplays[i] == attributeValue)
+            {
+                return i;
+            }
+        }
+
+        return -1; // not found.
     }
 
     public void UpdateEventFunction(string feedback, bool toAppend)
@@ -138,40 +152,51 @@ public class PlaySceneControllerScript : GameControllerScript
 
     private void CheckEventFunctions()
     {
-        /*
         bool hasAlreadyUpdatedToday = false;
         foreach(EventFunctionScript eventFunction in eventFunctions)
         {
             bool isAllConditionsSatisfied = true;
             string eventName = eventFunction.GetEventName();
             EventFunctionScript.ConditionScript[] conditions = eventFunction.GetAllConditions();
+            float compoundedPercent = 1.0f;
+            bool toUseCompoundPercent = false;
             foreach (EventFunctionScript.ConditionScript condition in conditions)
             {
                 int conditionType = condition.dropdownValue;
-                if (conditionType == CONDITION_PERCENTAGE)
-                {
-                    string percentageChanceToOccur = condition.textField;
-                    int percentageChance = Int32.Parse(percentageChanceToOccur);
-                    if (!WillOccurWithChance(percentageChance))
-                    {
-                        isAllConditionsSatisfied = false;
-                        break;
-                    }
-                } else if (conditionType == CONDITION_ATTRIBUTE)
+                if (conditionType == CONDITION_ATTRIBUTE)
                 {
                     int attributeIndex = condition.secondDropdownValue;
                     string attributeName = listAttributes[attributeIndex];
-                    string attrStartRangeString = condition.textField;
-                    string attrEndRangeString = condition.endField;
-                    int attrStartRange = Int32.Parse(attrStartRangeString);
-                    int attrEndRange = Int32.Parse(attrEndRangeString);
-                    int currentAttributeValue = GetCurrentAttributeValue(attributeName);
-                    if (currentAttributeValue < attrStartRange || currentAttributeValue > attrEndRange)
+                    int attributeType = condition.attrType;
+
+                    if (attributeType == AttributeScript.ATTRIBUTE_TYPE_DISCRETE)
                     {
-                        isAllConditionsSatisfied = false;
-                        break;
+                        string attributeValue = GetCurrentAttributeValue(attributeName);
+                        int attributeValueIndex = GetAttributeValueIndex(attributeName, attributeValue);
+                        float currentPercent = condition.discretePercents[attributeValueIndex];
+                        if (!WillOccurWithChance(currentPercent))
+                        {
+                            isAllConditionsSatisfied = false;
+                            break;
+                        }
+                    }
+                    else if (attributeType == AttributeScript.ATTRIBUTE_TYPE_CONTINUOUS)
+                    {
+                        toUseCompoundPercent = true;
+                        float gradient, constant;
+                        Graphing.FindLineEquation(condition.x1Val, condition.y1Percent, condition.x2Val, condition.y2Percent,
+                            out gradient, out constant);
+                        string attributeValue = GetCurrentAttributeValue(attributeName);
+                        int attributeValueNumber = Int32.Parse(attributeValue);
+                        float mxPlusC = gradient * attributeValueNumber + constant;
+                        compoundedPercent *= mxPlusC;
                     }
                 }
+            }
+
+            if (!WillOccurWithChance(compoundedPercent) && toUseCompoundPercent)
+            {
+                isAllConditionsSatisfied = false;
             }
 
             if (isAllConditionsSatisfied)
@@ -180,18 +205,17 @@ public class PlaySceneControllerScript : GameControllerScript
                 EventFunctionScript.ActionScript[] actions = eventFunction.GetAllActions();
                 foreach (EventFunctionScript.ActionScript action in actions)
                 {
-                    int actionType = action.dropdownValue;
+                    /*int actionType = action.dropdownValue;
                     if (actionType == ACTION_ATTRIBUTE)
                     {
                         int attributeIndex = action.secondDropdownValue;
                         string attributeName = listAttributes[attributeIndex];
                         int amountToChange = Int32.Parse(action.textField);
                         ChangeValue(attributeName, amountToChange);
-                    } else if (actionType == ACTION_STATUS)
-                    {
-                        // not yet implemented.
-                    }
+                    }*/
                 }
+
+                Debug.Log("Event " + eventName + " has occurred. Hurray!");
 
                 if (hasAlreadyUpdatedToday)
                 {
@@ -202,9 +226,11 @@ public class PlaySceneControllerScript : GameControllerScript
                     UpdateEventFunction(eventName + " : " + eventFunction.GetMessageDisplay(), false);
                 }
                 
+            } else
+            {
+                Debug.Log("Event " + eventName + " FAILED :( ");
             }
         }
-        */
     }
 
     public void ChangeValue(string attributeName, int amountToChange)
@@ -224,30 +250,40 @@ public class PlaySceneControllerScript : GameControllerScript
         }
     }
 
-    public void ChangeDiscreteValue(string attributeName, bool canRepeat)
+    public void ChangeDiscreteValue(string attributeName, bool canRepeat=false, string specifiedAttributeName="")
     {
         if (attributeTable.ContainsKey(attributeName))
         {
             Transform valueController = ((AttributeDisplay)attributeTable[attributeName]).attributeValueController;
-            string[] choices = ((AttributeDisplay)attributeTable[attributeName]).choices;
-            
-            int numChoices = choices.Length;
-            int randomChoice = UnityEngine.Random.Range(0, numChoices);
 
-            if (canRepeat)
+            // if change to random choice.
+            if (specifiedAttributeName == "")
             {
-                valueController.GetComponent<Text>().text = choices[randomChoice];
+                string[] choices = ((AttributeDisplay)attributeTable[attributeName]).choices;
+
+                int numChoices = choices.Length;
+                int randomChoice = UnityEngine.Random.Range(0, numChoices);
+
+                if (canRepeat)
+                {
+                    valueController.GetComponent<Text>().text = choices[randomChoice];
+                }
+                else
+                {
+                    string previousValue = valueController.GetComponent<Text>().text;
+                    string newValue = choices[randomChoice];
+                    if (previousValue == newValue)
+                    {
+                        newValue = choices[(randomChoice + 1) % numChoices];
+                    }
+
+                    valueController.GetComponent<Text>().text = newValue;
+                }
             }
+            // if changed to specified choice.
             else
             {
-                string previousValue = valueController.GetComponent<Text>().text;
-                string newValue = choices[randomChoice];
-                if (previousValue == newValue)
-                {
-                    newValue = choices[(randomChoice + 1) % numChoices];
-                }
-
-                valueController.GetComponent<Text>().text = newValue;
+                valueController.GetComponent<Text>().text = specifiedAttributeName;
             }
         }
     }
