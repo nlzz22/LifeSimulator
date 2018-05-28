@@ -231,11 +231,20 @@ public class WorldEditControllerScript : GameControllerScript
                 {
                     Transform attrInputAction = actnAttachment.GetChild(0);
                     Transform dropdown = attrInputAction.Find("Dropdown");
-
+                    dropdown.GetComponent<Dropdown>().value = secDropVal;
                     dropdown.GetComponent<DropdownAttributeAction>().type = type;
                     dropdown.GetComponent<DropdownAttributeAction>().attributeIndexSelected = secDropVal;
                     dropdown.GetComponent<DropdownAttributeAction>().thirdValue = thirdVal;
-                    
+
+                    if (type == AttributeScript.ATTRIBUTE_TYPE_CONTINUOUS)
+                    {
+                        Transform continuousCase = attrInputAction.Find("ContinuousCase");
+                        continuousCase.Find("ChangeField").GetComponent<InputField>().text = thirdVal.ToString();
+                    } else if (type == AttributeScript.ATTRIBUTE_TYPE_DISCRETE)
+                    {
+                        Transform discreteCase = attrInputAction.Find("DiscreteCase");
+                        discreteCase.Find("Dropdown").GetComponent<Dropdown>().value = thirdVal;
+                    }
                 }
             }
             

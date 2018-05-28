@@ -1,8 +1,7 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class ButtonScript : MonoBehaviour {
@@ -92,7 +91,14 @@ public class ButtonScript : MonoBehaviour {
         if (eventFunctionGrid == null)
         {
             eventFunctionGrid = GameObject.Find("Content (Functions Grid)");
+            if (eventFunctionGrid == null)
+            {
+                eventFunctionGrid =
+                    eventFunctionCanvas.transform.
+                    Find("Scroll View").Find("Viewport").Find("Content (Functions Grid)").gameObject;
+            }
         }
+        Debug.Log(eventFunctionGrid);
 
         return eventFunctionGrid;
     }
@@ -227,8 +233,30 @@ public class ButtonScript : MonoBehaviour {
 
     }
 
+    private void LoadAllEventFunctionInput()
+    {
+        FindGameScript().CacheAttributes();
+        FindEventFunctionsGrid();
+        int numChild = eventFunctionGrid.transform.childCount;
+        eventFunctionCanvas.SetActive(true);
+        for (int i = 0; i < numChild; i++)
+        {
+            Transform eventFuncWholeChild = eventFunctionGrid.transform.GetChild(i);
+            Debug.Log(eventFuncWholeChild);
+            eventFuncWholeChild.Find("EventFunctionInput").gameObject.SetActive(true);
+        }
+    }
+
     public void SaveAndExit()
     {
+        transform.GetChild(0).gameObject.SetActive(true); // load saving screen
+        LoadAllEventFunctionInput();
+        StartCoroutine(Save());
+    }
+
+    private IEnumerator Save()
+    {
+        yield return new WaitForSeconds(1);
         FindGameScript().SaveGame();
         MainMenu();
     }
