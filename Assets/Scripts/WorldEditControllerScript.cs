@@ -183,7 +183,7 @@ public class WorldEditControllerScript : GameControllerScript
                 {
                     Transform attrInputCond = condAttachment.GetChild(0);
                     Transform dropdown = attrInputCond.Find("Dropdown");
-                     
+
                     dropdown.GetComponent<Dropdown>().value = secDropVal;
                     dropdown.GetComponent<DropdownAttributeCondition>().type = attributeType;
                     dropdown.GetComponent<DropdownAttributeCondition>().attributeIndexSelected = secDropVal;
@@ -206,10 +206,10 @@ public class WorldEditControllerScript : GameControllerScript
                         dropdown.GetComponent<DropdownAttributeCondition>().percentagesFeed = percentages;
                     }
                 }
+            }
 
             // populate action statements.
-            /*
-            Transform actionGrid = eventFuncInput.Find("ActionGrid");
+            Transform actionGrid = eventFuncInput.Find("Scroll View(Action)").Find("Viewport").Find("ActionGrid");
             Destroy(actionGrid.GetChild(0).gameObject); // remove all child (it has only 1 child by default)
             EventFunctionScript.ActionScript[] actns = currEventFunc.GetAllActions();
             for (int j = 0; j < actns.Length; j++)
@@ -218,28 +218,27 @@ public class WorldEditControllerScript : GameControllerScript
                 EventFunctionScript.ActionScript actn = actns[j];
                 int dropdownVal = actn.dropdownValue;
                 int secDropVal = actn.secondDropdownValue;
-                string text = actn.textField;
+                int thirdVal = actn.thirdValue;
+                int type = actn.attrType;
 
                 // start populating to real world.
                 GameObject actionDropdown = Instantiate(actnDropdown, actionGrid);
                 actionDropdown.GetComponent<Dropdown>().value = dropdownVal;
+                
                 Transform actnAttachment = actionDropdown.transform.Find("ActionAttachment");
 
                 if (dropdownVal == 1) // attribute
                 {
                     Transform attrInputAction = actnAttachment.GetChild(0);
                     Transform dropdown = attrInputAction.Find("Dropdown");
-                    Transform changeField = attrInputAction.Find("ChangeField");
-                    dropdown.GetComponent<Dropdown>().value = secDropVal;
-                    changeField.GetComponent<InputField>().text = text;
 
+                    dropdown.GetComponent<DropdownAttributeAction>().type = type;
+                    dropdown.GetComponent<DropdownAttributeAction>().attributeIndexSelected = secDropVal;
+                    dropdown.GetComponent<DropdownAttributeAction>().thirdValue = thirdVal;
+                    
                 }
-                else if (dropdownVal == 2) // status: Not yet implemented.
-                {
-                }*/
             }
-
-
+            
             // Hide and unhide the necessary so that rep view is shown.
             eventFuncRep.gameObject.SetActive(true);
             eventFuncInput.gameObject.SetActive(false);

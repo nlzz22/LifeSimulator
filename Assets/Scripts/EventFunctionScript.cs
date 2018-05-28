@@ -31,7 +31,10 @@ public class EventFunctionScript
         public int dropdownValue;
 
         public int secondDropdownValue;
-        public string textField;
+        public int thirdValue;
+
+        // Attribute only.
+        public int attrType;
     }
 
     private string repText;
@@ -103,8 +106,8 @@ public class EventFunctionScript
         }
 
         // Add actions
-        /*
-        GameObject actionGrid = input.Find("ActionGrid").gameObject;
+        GameObject actionGrid = input.Find("Scroll View(Action)").Find("Viewport").
+            Find("ActionGrid").gameObject;
         int numOfChild = actionGrid.transform.childCount;
         actions = new ActionScript[numOfChild];
         for (int i = 0; i < numOfChild; i++)
@@ -120,17 +123,26 @@ public class EventFunctionScript
                 Transform attrInputAction = actionAttachment.transform.GetChild(0);
                 Transform secDropdown = attrInputAction.Find("Dropdown");
                 int secDropdownValue = secDropdown.GetComponent<Dropdown>().value;
-                Transform text = attrInputAction.Find("ChangeField");
                 action.secondDropdownValue = secDropdownValue;
-                action.textField = text.GetComponent<InputField>().text;
-            }
-            else if (dropdownValue == 2) // status: not yet implemented.
-            {
+                int type = secDropdown.GetComponent<DropdownAttributeAction>().type;
 
+                if (type == AttributeScript.ATTRIBUTE_TYPE_CONTINUOUS)
+                {
+                    Transform changeField = attrInputAction.Find("ContinuousCase").Find("ChangeField");
+                    int change = Int32.Parse(changeField.GetComponent<InputField>().text);
+                    action.thirdValue = change;
+                } else if (type == AttributeScript.ATTRIBUTE_TYPE_DISCRETE)
+                {
+                    Transform changeField = attrInputAction.Find("DiscreteCase").Find("Dropdown");
+                    int changeAttr = changeField.GetComponent<Dropdown>().value;
+                    action.thirdValue = changeAttr;
+                }
+
+                action.attrType = type;
             }
 
             actions[i] = action;
-        }*/
+        }
 
     }
 
