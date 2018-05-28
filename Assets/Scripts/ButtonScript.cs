@@ -98,7 +98,6 @@ public class ButtonScript : MonoBehaviour {
                     Find("Scroll View").Find("Viewport").Find("Content (Functions Grid)").gameObject;
             }
         }
-        Debug.Log(eventFunctionGrid);
 
         return eventFunctionGrid;
     }
@@ -242,7 +241,6 @@ public class ButtonScript : MonoBehaviour {
         for (int i = 0; i < numChild; i++)
         {
             Transform eventFuncWholeChild = eventFunctionGrid.transform.GetChild(i);
-            Debug.Log(eventFuncWholeChild);
             eventFuncWholeChild.Find("EventFunctionInput").gameObject.SetActive(true);
         }
     }
