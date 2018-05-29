@@ -33,6 +33,8 @@ public class PlaySceneControllerScript : GameControllerScript
     private static string VALUE_NAME = "Value Text";
     private static string DAY_TEXT = "Day ";
 
+    private static string TEXT_NO_EVENT_FUNCTION_OCCUR = "Nothing happened on this nice and peaceful day";
+
     private static int CONDITION_ATTRIBUTE = 1;
     private static int ACTION_ATTRIBUTE = 1;
 
@@ -73,6 +75,7 @@ public class PlaySceneControllerScript : GameControllerScript
 
     public void PassOneCounter()
     {
+        feedbackEventFuncObject.GetComponent<Text>().text = TEXT_NO_EVENT_FUNCTION_OCCUR;
         dayCounter++;
         CheckEventFunctions();
 
@@ -113,7 +116,10 @@ public class PlaySceneControllerScript : GameControllerScript
 
     private bool WillOccurWithChance(float percentage)
     {
-        return (UnityEngine.Random.Range(0.0f, 1.0f) <= (percentage / 100.0));
+        float percentageInDecimal = percentage / 100.0f;
+        float random = UnityEngine.Random.Range(0.0f, 1.0f);
+
+        return (random < percentageInDecimal);
     }
 
     private string GetCurrentAttributeValue(string attributeName)
@@ -205,17 +211,25 @@ public class PlaySceneControllerScript : GameControllerScript
                 EventFunctionScript.ActionScript[] actions = eventFunction.GetAllActions();
                 foreach (EventFunctionScript.ActionScript action in actions)
                 {
-                    /*int actionType = action.dropdownValue;
+                    int actionType = action.dropdownValue;
                     if (actionType == ACTION_ATTRIBUTE)
                     {
                         int attributeIndex = action.secondDropdownValue;
                         string attributeName = listAttributes[attributeIndex];
-                        int amountToChange = Int32.Parse(action.textField);
-                        ChangeValue(attributeName, amountToChange);
-                    }*/
-                }
+                        int attributeType = action.attrType;
 
-                Debug.Log("Event " + eventName + " has occurred. Hurray!");
+                        if (attributeType == AttributeScript.ATTRIBUTE_TYPE_CONTINUOUS)
+                        {
+                            int amountToChange = action.thirdValue;
+                            ChangeValue(attributeName, amountToChange);
+                        } else if (attributeType == AttributeScript.ATTRIBUTE_TYPE_DISCRETE)
+                        {
+                            int changeToThisValueIndex = action.thirdValue;
+                            string changeToThisValue = ((AttributeDisplay)attributeTable[attributeName]).choices[changeToThisValueIndex];
+                            ChangeDiscreteValue(attributeName, specifiedAttributeName:changeToThisValue);
+                        }
+                    }
+                }
 
                 if (hasAlreadyUpdatedToday)
                 {
@@ -226,9 +240,6 @@ public class PlaySceneControllerScript : GameControllerScript
                     UpdateEventFunction(eventName + " : " + eventFunction.GetMessageDisplay(), false);
                 }
                 
-            } else
-            {
-                Debug.Log("Event " + eventName + " FAILED :( ");
             }
         }
     }
