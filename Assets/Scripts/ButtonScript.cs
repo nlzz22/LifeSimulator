@@ -112,6 +112,11 @@ public class ButtonScript : MonoBehaviour {
         SceneManager.LoadScene("WorldEditor");
     }
 
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
     public void EventFunctionTab()
     {
         // save the attributes for another canvas to use.
